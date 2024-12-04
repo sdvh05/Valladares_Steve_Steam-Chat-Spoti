@@ -14,33 +14,21 @@ import java.util.Date;
  *
  * @author Hp
  */
-public class Musica {
+public class Musica  {
     private RandomAccessFile Mus;
 
     
-    public Musica(String titulo, String artista,String album, double duracion,String rutaMusica){
+    public Musica(String titulo, String artista,String album, double duracion,String rutaMusica,String rutaImagen){
     
  
     }
     
-    public String PrintList(RandomAccessFile musics)throws IOException{
-        musics.seek(0);
+    
+    
+    public void NewMusic()throws IOException{
         
-        while(musics.getFilePointer()<musics.length()){
-            String titulo=musics.readUTF();
-            String artista=musics.readUTF();
-            String album= musics.readUTF();
-            double duracion=musics.readDouble();
-            musics.readUTF();
-            
-              //String builder que me genere Todos Mis Juegos y me devuelva todo:
-            System.out.println("--------------------------------------------------------");
-            System.out.println(titulo+" | "+artista+" | "+album+" | "+duracion+" | "); 
-            System.out.println("--------------------------------------------------------");
-        }
-        
-      return "StringBuilder";
     }
+
     
 
 }

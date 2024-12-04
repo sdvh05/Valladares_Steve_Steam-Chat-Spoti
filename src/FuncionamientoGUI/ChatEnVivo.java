@@ -8,30 +8,37 @@ import java.awt.event.WindowEvent;
 
 
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
+
 public class ChatEnVivo extends JFrame {
 
     private JTextArea chatArea;
     private JTextField messageField;
     private JButton sendButton;
+    private JLabel titleLabel;
+    private JList<String> userList;
 
     public ChatEnVivo() {
         setTitle("Chat en Vivo");
-        setSize(500, 600); // Tamaño más ancho
+        setSize(700, 600); // Ajustar tamaño para acomodar el panel lateral
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null); // Centrar la ventana
 
-        //Titulo
-        JPanel TitlePanel = new JPanel();
-        TitlePanel.setLayout(new BorderLayout());
-        TitlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Panel del título
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BorderLayout());
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel titleLabel = new JLabel("Chat en Vivo");
+        titleLabel = new JLabel("Chat General");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        TitlePanel.add(titleLabel, BorderLayout.WEST);
+        titlePanel.add(titleLabel, BorderLayout.WEST);
 
-        add(TitlePanel, BorderLayout.NORTH);
+        add(titlePanel, BorderLayout.NORTH);
 
-        //TextArea Chat
+        // TextArea para el chat
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -42,7 +49,7 @@ public class ChatEnVivo extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        //Enviar Mensaje
+        // Panel para enviar mensajes
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout(10, 10));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -57,11 +64,44 @@ public class ChatEnVivo extends JFrame {
 
         add(inputPanel, BorderLayout.SOUTH);
 
-        //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL
+        // Panel aparte con JListUsuarios
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BorderLayout());
+        sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        //Jlist en si
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        listModel.addElement("Chat General");
+        for (String user : obtenerUsuariosRegistrados()) {
+            listModel.addElement(user);
+        }
+
+        userList = new JList<>(listModel);
+        userList.setFont(new Font("Arial", Font.PLAIN, 14));
+        userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        userList.setBorder(BorderFactory.createTitledBorder("Usuarios"));
+
+        //Modificar la UserList
+        userList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                messageField.setText("");
+                String seleccion = userList.getSelectedValue();
+                if ("Chat General".equals(seleccion)) {
+                    titleLabel.setText("Chat General");
+                } else {
+                    titleLabel.setText("Chat con: " + seleccion);
+                }
+            }
+        });
+
+        sidePanel.add(new JScrollPane(userList), BorderLayout.CENTER);
+        add(sidePanel, BorderLayout.EAST);
+
+        // Manejo de cierre de ventana
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                //Abrir Mi Perfil
+                // Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
                     MiPerfil miPerfil = new MiPerfil();
                     miPerfil.setVisible(true);
@@ -70,19 +110,9 @@ public class ChatEnVivo extends JFrame {
             }
         });
 
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enviarMensaje();
-            }
-        });
-
-        messageField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                enviarMensaje();
-            }
-        });
+        // Listeners para enviar mensajes
+        sendButton.addActionListener(e -> enviarMensaje());
+        messageField.addActionListener(e -> enviarMensaje());
     }
 
     private void enviarMensaje() {
@@ -91,6 +121,12 @@ public class ChatEnVivo extends JFrame {
             chatArea.append("Tú: " + mensaje + "\n");
             messageField.setText("");
         }
+    }
+
+    // Método ficticio para obtener usuarios registrados
+    private List<String> obtenerUsuariosRegistrados() {
+        // Aquí deberías agregar la lógica real para obtener los usuarios registrados
+        return List.of("xd","aaa");
     }
 
     public static void main(String[] args) {

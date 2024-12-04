@@ -4,82 +4,91 @@
  */
 package FuncionamientoGUI;
 
-import java.awt.Font;
-import java.awt.GridLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
-/**
- *
- * @author Hp
- */
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class Login extends JFrame {
     private JTextField usernameField;
-    private JTextField IdField;
+    private JPasswordField passwordField;
+    private JCheckBox showPasswordCheckBox;
 
     public Login() {
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(500, 400); // Aumenta el tamaño del frame
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        // Panel principal con padding
+        JPanel mainPanel = new JPanel(new GridLayout(5, 1, 10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Etiqueta de título
         JLabel titleLabel = new JLabel("Log In", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        panel.add(titleLabel);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        mainPanel.add(titleLabel);
 
+        // Campo de usuario
         usernameField = new JTextField();
         usernameField.setBorder(BorderFactory.createTitledBorder("Usuario"));
-        panel.add(usernameField);
+        usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
+        mainPanel.add(usernameField);
 
-        JPanel buttonPanel = new JPanel();
-        JButton Login = new JButton("Login");
-        JButton Signin = new JButton("Crear Cuenta");
+        // Campo de contraseña
+        passwordField = new JPasswordField();
+        passwordField.setBorder(BorderFactory.createTitledBorder("Contraseña"));
+        passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
+        mainPanel.add(passwordField);
 
-        buttonPanel.add(Login);
-        buttonPanel.add(Signin);
-        panel.add(buttonPanel);
+        // Checkbox para mostrar la contraseña
+        showPasswordCheckBox = new JCheckBox("Mostrar contraseña");
+        showPasswordCheckBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        mainPanel.add(showPasswordCheckBox);
 
-        add(panel);
-
-        
-        Login.addActionListener(new ActionListener() {
+        // Acción para mostrar u ocultar la contraseña
+        showPasswordCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username=usernameField.getText();
+                if (showPasswordCheckBox.isSelected()) {
+                    passwordField.setEchoChar((char) 0); // Muestra la contraseña
+                } else {
+                    passwordField.setEchoChar('*'); // Oculta la contraseña
+                }
+            }
+        });
 
-                //Abrir Mi Perfil
+        // Panel para los botones
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JButton loginButton = new JButton("Login");
+        JButton signInButton = new JButton("Crear Cuenta");
+        loginButton.setFont(new Font("Arial", Font.BOLD, 14));
+        signInButton.setFont(new Font("Arial", Font.BOLD, 14));
+        buttonPanel.add(loginButton);
+        buttonPanel.add(signInButton);
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
+
+        // Acción del botón Login
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+
+                // Aquí puedes agregar lógica para validar el login
                 SwingUtilities.invokeLater(() -> {
                     MiPerfil miPerfil = new MiPerfil();
                     miPerfil.setVisible(true);
                 });
-                
-                
             }
         });
 
-        // 
-        Signin.addActionListener(new ActionListener() {
+        // Acción del botón Crear Cuenta
+        signInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                
-                //Volver SignIn
                 SwingUtilities.invokeLater(() -> new SignIn());
             }
         });
@@ -87,7 +96,8 @@ public class Login extends JFrame {
         setVisible(true);
     }
 
-    
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(Login::new);
+    }
 }
 

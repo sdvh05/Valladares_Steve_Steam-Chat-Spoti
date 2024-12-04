@@ -28,13 +28,16 @@ public class Usuario extends Administrador {
     
     public RandomAccessFile musics, games;
     protected String Name;
+    protected String Pass;
+    protected boolean admin;
     
-    private static final String ImageIcons = "Juegos/ImageIcons";
     
     
-    public Usuario(String Username){
+    public Usuario(String Username, String Password, boolean Admin){
         try {
             this.Name=Username;
+            this.Pass=Password;
+            this.admin=Admin;
             createUserFolders();
         } catch (IOException ex) {
             Logger.getLogger(Usuario.class.getName()).log(Level.SEVERE, null, ex);
@@ -44,25 +47,40 @@ public class Usuario extends Administrador {
     
         @Override
     public String getParentPath() {
-        return super.getParentPath()+"/Us."+Name; //solo para Herencia
+        return super.getParentPath()+"/Usuarios"+getType()+Name; //Para Herencia y Crear
     }
    
-    
+    private String getType(){
+        if (admin) {
+            return "/ADMIN.";
+        }
+        return "/USER.";
+    }
 
     
      private String UserFolder() {
-        return super.getParentPath()+"/Us."+Name;
+        return this.getParentPath();
     }
+     
+    @Override
+     protected String UserMusic(){
+         return this.getParentPath()+"/Musica";
+     }
+     
+    @Override
+     protected String UserSteam(){
+         return this.getParentPath()+"/Juegos";
+     }
 
     private void createUserFolders() throws IOException {
         //Crear folder user
         File edir = new File(UserFolder());
         edir.mkdir();
-        
-        //crear los archivos de Musica y Game
-        musics= MusicFile(Name);
-        games=GameFile(Name);
-   
+        File msc = new File(UserMusic());
+        msc.mkdir();
+        File stm = new File(UserSteam());
+        stm.mkdir();
+
     }
     
     private RandomAccessFile MusicFile(String name) throws IOException {
@@ -89,7 +107,7 @@ public class Usuario extends Administrador {
             String genero=games.readUTF();
             String desarrollador=games.readUTF();
             String releasedate=games.readUTF();
-            String ruta=games.readUTF();
+            String ruta=games.readUTF(); 
          
 
             //String builder que me genere Todos Mis Juegos y me devuelva todo:
@@ -97,22 +115,15 @@ public class Usuario extends Administrador {
             System.out.println(name+" | "+genero+" | "+desarrollador+" | "+releasedate+" | ");
             System.out.println("----------------------------------------------------------------------------------------");
        }
-       return "StringBuilder";
+       return "StringBuilder"; //ocupo q me lea la carpeta y retorne todos los archivos
     }
     
     public void AddGame(String name, String genero, String desarrollador, String releaseDate, String rutagame) throws IOException {
-            games.seek(games.length());
-            
-            games.writeUTF(name);
-            games.writeUTF(genero);
-            games.writeUTF(desarrollador);
-            games.writeUTF(releaseDate);
-            games.writeUTF(rutagame);
-  
-            //newJuego
+
     }
 
 
+    
     
     
     //Funciones Music
@@ -136,12 +147,8 @@ public class Usuario extends Administrador {
       return "StringBuilder";
     }
     
-    public void AddMusic(String titulo, String artista,String album, double duracion,String rutaMusica) throws IOException{
-        musics.seek(musics.length());
-        musics.writeUTF(titulo);
-        musics.writeUTF(artista);
-        musics.writeDouble(duracion);
-        musics.writeUTF(rutaMusica);
+    public void AddMusic(String titulo, String artista,String album, int duracion,String rutaMusica) throws IOException{
+
     }
     
     

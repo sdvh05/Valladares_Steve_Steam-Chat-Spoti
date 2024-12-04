@@ -4,115 +4,95 @@
  */
 package FuncionamientoGUI;
 
-import FuncionamientoGUI.MiPerfil;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-/**
- *
- * @author Hp
- */
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-
 public class SignIn extends JFrame {
     private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JCheckBox adminCheckBox;
 
     public SignIn() {
-        setTitle("SignIn");
+        setTitle("Crear Cuenta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(500, 400); // Tamaño ajustado
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));  // Ajuste el GridLayout
+        JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10)); // GridLayout ajustado
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        // Título
         JLabel titleLabel = new JLabel("Crear Cuenta", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(titleLabel);
 
+        // Campo de texto para el usuario
         usernameField = new JTextField();
         usernameField.setBorder(BorderFactory.createTitledBorder("Usuario"));
         panel.add(usernameField);
 
-        JPanel buttonPanel = new JPanel();
-        JButton Creatbtn = new JButton("Crear Cuenta");
-        JButton Returnbtn = new JButton("Return");
+        // Campo de texto para la contraseña
+        passwordField = new JPasswordField();
+        passwordField.setBorder(BorderFactory.createTitledBorder("Contraseña"));
+        panel.add(passwordField);
 
-        buttonPanel.add(Creatbtn);
-        buttonPanel.add(Returnbtn);
+        // Checkbox para cuenta de administrador
+        adminCheckBox = new JCheckBox("Cuenta Administrador");
+        panel.add(adminCheckBox);
+
+        // Botones
+        JPanel buttonPanel = new JPanel();
+        JButton createButton = new JButton("Crear Cuenta");
+        JButton returnButton = new JButton("Regresar");
+
+        buttonPanel.add(createButton);
+        buttonPanel.add(returnButton);
         panel.add(buttonPanel);
 
         add(panel);
 
-        
-        Creatbtn.addActionListener(new ActionListener() {
+        // Acción para el botón "Crear Cuenta"
+        createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
-                if (username.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor, rellena todas las casillas");
+                String password = new String(passwordField.getPassword());
+                boolean isAdmin = adminCheckBox.isSelected();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor, rellena todas las casillas", "Error", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    boolean Crear=true; //= Funcion Crear de Admin
-                    if (Crear) {
-                        
-                    }else{
+                    boolean crear = true; //Crear
+                    if (crear) {
+                        SwingUtilities.invokeLater(() -> {
+                            MiPerfil miPerfil = new MiPerfil();
+                            miPerfil.setVisible(true);
+                        });
+                        dispose();
+                    } else {
                         JOptionPane.showMessageDialog(null, "El username ya está en uso. Por favor, elige otro.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-
-                //Abrir Mi Perfil
-                SwingUtilities.invokeLater(() -> {
-                    MiPerfil miPerfil = new MiPerfil();
-                    miPerfil.setVisible(true);
-                });
-
             }
         });
 
-        Returnbtn.addActionListener(new ActionListener() {
+        // Acción para el botón "Regresar"
+        returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                JOptionPane.showMessageDialog(null, "Su Codigo de Usuario es: "+"\n Bienvenido al Proyecto");
-                //Abrir CrearCuenta
                 SwingUtilities.invokeLater(() -> new Login());
+                dispose();
             }
         });
 
         setVisible(true);
     }
 
-    private void VerficarLog() {
-        String username = usernameField.getText();
-        
-//     
-//        
-//  if (username.isEmpty() || password.isEmpty()) {
-//        JOptionPane.showMessageDialog(null, "Por favor, rellena todas las casillas");
-//    } else {
-//        if (password.length() != 5) {
-//            JOptionPane.showMessageDialog(null, "La contraseña debe tener exactamente 5 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
-//        } else {
-//           
-//            boolean crear = mas.CrearCuenta(username, password);
-//            
-//            if (crear) {
-//                JOptionPane.showMessageDialog(null, "SE HA REGISTRADO CORRECTAMENTE");
-//                new MainMenu(mas).setVisible(true);
-//                this.dispose(); 
-//                this.setLocationRelativeTo(null); 
-//            } else {
-//                JOptionPane.showMessageDialog(null, "El username ya está en uso. Por favor, elige otro.", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-   }
-  
-    
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(SignIn::new);
+    }
 }
+

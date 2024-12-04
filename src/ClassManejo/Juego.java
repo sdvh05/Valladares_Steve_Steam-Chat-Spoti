@@ -18,10 +18,10 @@ import java.util.Date;
  *
  * @author Hp
  */
-public class Juego extends GM {
+public class Juego extends GM{
     
 
-    public Juego(String name, String genero, String desarrollador, String releaseDate, String rutagame) {
+    public Juego(String name, String genero, String desarrollador, String releaseDate, String rutagame, String rutaImagen) {
 
     }
 
@@ -35,6 +35,7 @@ public class Juego extends GM {
             String desarrollador = games.readUTF();
             String releasedate = games.readUTF();
             String ruta = games.readUTF();
+            String Imagen= games.readUTF();
 
             //String builder que me genere Todos Mis Juegos y me devuelva todo:
             System.out.println("---------------------------------------------------------------------------------------");
@@ -43,6 +44,8 @@ public class Juego extends GM {
         }
         return "StringBuilder";
     }
-       
+        
+    
+    
 
 }

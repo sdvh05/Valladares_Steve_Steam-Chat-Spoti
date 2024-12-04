@@ -1,6 +1,7 @@
 package ClassManejo;
 
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -18,7 +19,8 @@ public class psvm {
 
         Administrador ad=new Administrador();
         //si creo el Folder Administrador
-        boolean crear=ad.CreateUser("Ioni");
+        boolean crear=ad.CreateUser("xd","xd",true);
+        boolean create=ad.CreateUser("aa","aa", false);
         String a = ad.getParentPath();
         
         System.out.println(a);

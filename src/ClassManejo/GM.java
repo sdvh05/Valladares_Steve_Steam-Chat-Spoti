@@ -18,4 +18,8 @@ public abstract class GM {
         
     }
     public abstract  String PrintList(RandomAccessFile raf)throws IOException;
+    
+    //public abstract String NewRaf(String name)throws IOException;
+    
 }
+    
