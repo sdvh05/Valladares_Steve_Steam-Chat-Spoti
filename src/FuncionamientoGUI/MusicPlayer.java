@@ -1,14 +1,17 @@
 package FuncionamientoGUI;
 
 
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class MusicPlayer extends JFrame {
+     private Administrador mas;
 
-    public MusicPlayer() {
+    public MusicPlayer(Administrador mas) {
+        this.mas=mas;
         setTitle("Reproductor de Música");
         setSize(600, 600); // Frame más ancho
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -84,7 +87,7 @@ public class MusicPlayer extends JFrame {
             public void windowClosing(WindowEvent e) {
                 //Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
-                    MiPerfil miPerfil = new MiPerfil();
+                    MiPerfil miPerfil = new MiPerfil(mas);
                     miPerfil.setVisible(true);
                 });
                 dispose();
@@ -121,10 +124,4 @@ public class MusicPlayer extends JFrame {
         });
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MusicPlayer player = new MusicPlayer();
-            player.setVisible(true);
-        });
-    }
 }
