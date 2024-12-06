@@ -1,10 +1,11 @@
 package FuncionamientoGUI;
 
-
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class NewMusic extends JFrame {
     private JTextField tituloField;
@@ -15,38 +16,72 @@ public class NewMusic extends JFrame {
     private JTextField rutaImagenField;
     private JLabel coverPreview;
     private JLabel discoPreview;
+    private JTextField diaField;
+    private JTextField anioField;
+    private JComboBox<Mes> mesComboBox;
+     private Administrador mas;
+    
+    public enum Mes {
+        Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre
+    }
 
-    public NewMusic() {
+    public NewMusic(Administrador mas) {
+        this.mas=mas;
         setTitle("Añadir Nueva Música");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null); // Centrar ventana
         setLayout(new BorderLayout());
+        
 
-        // Panel izquierdo Datos Nueva Musica
+        // Panel izquierdo Datos Nueva Música
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        //Ordenar y formato vertical
+        // Ordenar y formato vertical
         formPanel.add(createLabeledField("Título:", tituloField = new JTextField()));
         formPanel.add(createLabeledField("Artista:", artistaField = new JTextField()));
         formPanel.add(createLabeledField("Álbum:", albumField = new JTextField()));
         formPanel.add(createLabeledField("Duración (segundos):", duracionField = new JTextField()));
 
-        //Ruta de archivo
+        // Fecha de lanzamiento
+        JPanel fechaPanel = new JPanel();
+        fechaPanel.setLayout(new BoxLayout(fechaPanel, BoxLayout.Y_AXIS));
+        fechaPanel.setBorder(BorderFactory.createTitledBorder("Fecha de Lanzamiento"));
+
+        JPanel fechaInputsPanel = new JPanel();
+        fechaInputsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        diaField = new JTextField(2);
+        mesComboBox = new JComboBox<>(Mes.values());
+        anioField = new JTextField(4);
+
+        fechaInputsPanel.add(new JLabel("Día:"));
+        fechaInputsPanel.add(diaField);
+        fechaInputsPanel.add(Box.createHorizontalStrut(10));
+        fechaInputsPanel.add(new JLabel("Mes:"));
+        fechaInputsPanel.add(mesComboBox);
+        fechaInputsPanel.add(Box.createHorizontalStrut(10));
+        fechaInputsPanel.add(new JLabel("Año:"));
+        fechaInputsPanel.add(anioField);
+
+        fechaPanel.add(fechaInputsPanel);
+        formPanel.add(fechaPanel);
+
+        // Ruta de archivo
         JPanel archivoPanel = new JPanel(new BorderLayout());
         archivoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         rutaArchivoField = new JTextField();
         rutaArchivoField.setEditable(false);
-        archivoPanel.add(new JLabel("Ruta de Archivo:"), BorderLayout.NORTH);
+        archivoPanel.add(new JLabel("Ruta de la Cancion:"), BorderLayout.NORTH);
         archivoPanel.add(rutaArchivoField, BorderLayout.CENTER);
         JButton seleccionarArchivoBtn = new JButton("Seleccionar Archivo");
         seleccionarArchivoBtn.addActionListener(e -> seleccionarArchivo(rutaArchivoField));
         archivoPanel.add(seleccionarArchivoBtn, BorderLayout.SOUTH);
         formPanel.add(archivoPanel);
 
-        //Ruta de imagen
+        // Ruta de imagen
         JPanel imagenPanel = new JPanel(new BorderLayout());
         imagenPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         rutaImagenField = new JTextField();
@@ -60,19 +95,19 @@ public class NewMusic extends JFrame {
 
         add(formPanel, BorderLayout.CENTER);
 
-        //Pannel Decoracion
+        // Panel Decoración
         JPanel rightPanel = new JPanel();
-        rightPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15)); // Espaciado exterior
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
-        //Label Decoracion
+        // Label Decoración
         discoPreview = new JLabel();
         discoPreview.setHorizontalAlignment(JLabel.CENTER);
         discoPreview.setVerticalAlignment(JLabel.CENTER);
         discoPreview.setPreferredSize(new Dimension(200, 200));
 
-        //Cargar Imagen Disco
-        ImageIcon discoImage = new ImageIcon("src/Imagenes/Disco.png"); 
+        // Cargar Imagen Disco
+        ImageIcon discoImage = new ImageIcon("src/Imagenes/Disco.png");
         if (discoImage.getIconWidth() > 0) {
             Image scaledImage = discoImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             discoPreview.setIcon(new ImageIcon(scaledImage));
@@ -96,17 +131,24 @@ public class NewMusic extends JFrame {
 
         // Botón para guardar
         JButton guardarBtn = new JButton("Guardar Música");
-        guardarBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                guardarMusica();
-            }
-        });
+        guardarBtn.addActionListener(e -> guardarMusica());
         JPanel botonPanel = new JPanel();
         botonPanel.add(guardarBtn);
         add(botonPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+        
+        //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL (Agregar DO_NOTHING_ON_CLOSE))
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                //Abrir Mi Perfil
+                SwingUtilities.invokeLater(() -> {
+                    MiPerfil miPerfil = new MiPerfil(mas);
+                    miPerfil.setVisible(true);
+                });
+                dispose();
+            }
+        });
     }
 
     // Método para crear campos con etiquetas en vertical
@@ -138,16 +180,20 @@ public class NewMusic extends JFrame {
     }
 
     private void guardarMusica() {
-        
         String titulo = tituloField.getText();
         String artista = artistaField.getText();
         String album = albumField.getText();
         String duracionStr = duracionField.getText();
+        String diaStr = diaField.getText();
+        Mes mes = (Mes) mesComboBox.getSelectedItem();
+        String anioStr = anioField.getText();
         String rutaArchivo = rutaArchivoField.getText();
         String rutaImagen = rutaImagenField.getText();
 
         try {
             int duracion = Integer.parseInt(duracionStr);
+            int dia = Integer.parseInt(diaStr);
+            int anio = Integer.parseInt(anioStr);
 
             if (titulo.isEmpty() || artista.isEmpty() || album.isEmpty() || rutaArchivo.isEmpty() || rutaImagen.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -155,19 +201,21 @@ public class NewMusic extends JFrame {
             }
 
             // Mostrar datos ingresados
+                Administrador mas= new Administrador();
             JOptionPane.showMessageDialog(this, "Música Guardada:\n" +
                     "Título: " + titulo + "\n" +
                     "Artista: " + artista + "\n" +
                     "Álbum: " + album + "\n" +
                     "Duración: " + duracion + " segundos\n" +
+                    "Fecha de Lanzamiento: " + dia + " " + mes + " " + anio + "\n" +
                     "Ruta de Archivo: " + rutaArchivo + "\n" +
                     "Carátula: " + rutaImagen, "Información Guardada", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "La duración debe ser un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            mas.AddLibraryMusic(titulo, artista, album, duracion, rutaImagen, rutaImagen);
+            
+    
+        }catch(Exception e){
+            e.printStackTrace();;
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(NewMusic::new);
-    }
 }
+
