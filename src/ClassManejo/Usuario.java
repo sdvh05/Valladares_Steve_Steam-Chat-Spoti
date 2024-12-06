@@ -8,6 +8,10 @@ import java.io.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -146,10 +150,35 @@ public class Usuario extends Administrador {
         
       return "StringBuilder";
     }
-    
-    public void AddMusic(String titulo, String artista,String album, int duracion,String rutaMusica) throws IOException{
 
+    public void AddMusic(String Biblioteca, String namesong) throws IOException {
+        Path sourcePath = Paths.get(Biblioteca);
+        Path destinationPath = Paths.get(UserMusic());
+        
+        try {
+        // Copiar el archivo a la nueva ubicación (duplicarlo)
+            Files.copy(sourcePath, destinationPath, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
+            JOptionPane.showMessageDialog(null, "Se ha Añadido la Musica a Tu Biblioteca");
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
     }
+    
+    public static void deleteFile(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            
+            if (Files.exists(path)) {
+                Files.delete(path);
+                JOptionPane.showMessageDialog(null, "Archivo eliminado exitosamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "El archivo no existe.");
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar el archivo: " + e.getMessage());
+        }
+    }
+
     
     
     //Funciones Chat

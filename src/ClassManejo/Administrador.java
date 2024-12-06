@@ -8,8 +8,10 @@ import java.io.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,11 +19,6 @@ import java.util.Date;
  */
 
 /*
-    -Admin
-        - C Usuario
-            -Musica.ext
-            -Juego.ext
-
     -Admin
         -C Usuario
             -C Musica
@@ -31,14 +28,16 @@ import java.util.Date;
                 -juego1.gfc
                 -juego2.gfc
 
-//Cuenta Admin.... solo añadir cosas a la biblioteca... parametros Name Pass bool admin true yes false no, y que tenga permisos Especiales
-
  */
 public class Administrador {
 
     protected static String Path = "AdminProyect";
+    private int usuariosConectados = 0;
+    private ArrayList<Usuario> ListUs;
     public Usuario UserAct;
-    public String UserLog;
+    public String UserLog, MusicaUser, GameUser; //Guargar lo que necesito, las carpetas y el User
+    public boolean Permisos;
+    
     private RandomAccessFile users, newSong, newGame;
 
     public Administrador() {
@@ -87,9 +86,9 @@ public class Administrador {
             long pos = users.getFilePointer();
             String name = users.readUTF();
             users.readUTF();
-            users.skipBytes(1);
+            users.skipBytes(1); //bool
 
-            if (name == Username) {
+            if (name.equals(Username)) {
                 users.seek(pos); //deja el puntero para usar al ReadUtf encuentre el Username (pos: justo antes del Username que devolvio la funcion como true)
                 return true; //true: existe un archivo con ese nombre.
             }
@@ -103,16 +102,41 @@ public class Administrador {
             users.writeUTF(username); //escribir datos
             users.writeUTF(pass);
             users.writeBoolean(admin);
+            
+            UserLog=username;
+            Permisos=admin;
+            if (Permisos) {
+                MusicaUser=Path+"/Usuarios/ADMIN."+username+"/Musica";
+                GameUser=Path+"/Usuarios/ADMIN."+username+"/Juegos";
+            }else {
+                MusicaUser=Path+"/Usuarios/USER."+username+"/Musica";
+                GameUser=Path+"/Usuarios/USER."+username+"/Juegos"; 
+            }
 
             Usuario newuser = new Usuario(username, pass, admin);
+            JOptionPane.showMessageDialog(null, "SE HA REGISTRADO CORRECTAMENTE");
             return true;
         }
         return false;
     }
 
-    public boolean Login(String Username, String Pass, boolean Admin) throws IOException {
+    public boolean Login(String Username, String Pass) throws IOException {
         if (verificarLog(Username, Pass)) {
-
+            UserLog=Username;
+            Permisos=users.readBoolean();
+            System.out.println(Permisos);
+            System.out.println(UserLog);
+            
+            if (Permisos) {
+                MusicaUser=Path+"/Usuarios/ADMIN."+Username+"/Musica";
+                GameUser=Path+"/Usuarios/ADMIN."+Username+"/Juegos";
+            }else {
+                MusicaUser=Path+"/Usuarios/USER."+Username+"/Musica";
+                GameUser=Path+"/Usuarios/USER."+Username+"/Juegos"; 
+            }
+            System.out.println(MusicaUser);
+            System.out.println(GameUser);
+            
             return true;
         }
 
@@ -122,9 +146,9 @@ public class Administrador {
     private boolean verificarLog(String Username, String Password) throws IOException {
         users.seek(0);
         while (users.getFilePointer() < users.length()) {
-            long pos = users.getFilePointer();
             String name = users.readUTF();
             String pass = users.readUTF();
+            long pos = users.getFilePointer();
             users.skipBytes(1);
 
             if (name.equals(Username) && pass.equals(Password)) {
@@ -135,12 +159,12 @@ public class Administrador {
         return false;
     }
 //--------------------------------------------------------------------------------------------------------------------------------------
-
+ 
     
   //Agregar a Biblioteca
 //---------------------------------------------------------------------------------------------------------------------------------------
     public RandomAccessFile AddLibraryMusic(String titulo, String artista, String album, int duracion, String rutaMusica,String rutaImagen) throws IOException {
-        newSong = new RandomAccessFile(UserSteam() + "/" + titulo + ".mp3", "rw");
+        newSong = new RandomAccessFile(UserMusic() + "/" + titulo + ".mp3", "rw");
         newSong.writeUTF(titulo);
         newSong.writeUTF(artista);
         newSong.writeUTF(album);
@@ -151,14 +175,30 @@ public class Administrador {
     }
     
     public RandomAccessFile AddLibraryGame(String name, String genero, String desarrollador, String releaseDate, String rutagame, String rutaImagen)throws IOException{
-        newGame=new RandomAccessFile(UserMusic()+ "/"+ name +".gfc", "rw");
+        newGame=new RandomAccessFile(UserSteam()+ "/"+ name +".gfc", "rw");
         newGame.writeUTF(name);
         newGame.writeUTF(genero);
         newGame.writeUTF(desarrollador);
         newGame.writeUTF(releaseDate);
         newGame.writeUTF(rutagame);
         newGame.writeUTF(rutaImagen);
-        return newGame;
-        
+        return newGame;  
     }
+    //---------------------------------------------------------------------------------------------------------------------------------------
+
+    //Server:
+    public synchronized void incrementarContadorUsuariosConectados() {
+        usuariosConectados++;
+    }
+
+    public synchronized void decrementarContadorUsuariosConectados() {
+        if (usuariosConectados > 0) {
+            usuariosConectados--;
+        }
+    }
+
+    public synchronized int getUsuariosConectados() {
+        return usuariosConectados;
+    }
+
 }

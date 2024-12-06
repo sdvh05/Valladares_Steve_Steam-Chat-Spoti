@@ -1,22 +1,39 @@
 package FuncionamientoGUI;
+
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NewJuego extends JFrame {
     private JTextField nombreField;
     private JTextField generoField;
     private JTextField desarrolladorField;
-    private JTextField fechaLanzamientoField;
+    private JTextField diaField;
+    private JTextField anioField;
+    private JComboBox<Mes> mesComboBox;
     private JTextField rutaInstalacionField;
     private JTextField rutaImagenField;
     private JLabel coverPreview;
     private JLabel discoPreview;
+    
+    private Administrador mas;
+    
 
-    public NewJuego() {
+    public enum Mes {
+        Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre
+    }
+
+    public NewJuego(Administrador mas) {
+        this.mas=mas;
         setTitle("Añadir Nuevo Juego");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -30,14 +47,31 @@ public class NewJuego extends JFrame {
         formPanel.add(createLabeledField("Nombre:", nombreField = new JTextField()));
         formPanel.add(createLabeledField("Género:", generoField = new JTextField()));
         formPanel.add(createLabeledField("Desarrollador:", desarrolladorField = new JTextField()));
-        formPanel.add(createLabeledField("Fecha de Lanzamiento:", fechaLanzamientoField = new JTextField()));
+
+        // Fecha de lanzamiento
+        JPanel fechaPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        fechaPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JLabel fechaLabel = new JLabel("Fecha de Lanzamiento:");
+        diaField = new JTextField(2);
+        mesComboBox = new JComboBox<>(Mes.values());
+        anioField = new JTextField(4);
+
+        fechaPanel.add(fechaLabel);
+        fechaPanel.add(new JLabel("Día:"));
+        fechaPanel.add(diaField);
+        fechaPanel.add(new JLabel("Mes:"));
+        fechaPanel.add(mesComboBox);
+        fechaPanel.add(new JLabel("Año:"));
+        fechaPanel.add(anioField);
+
+        formPanel.add(fechaPanel);
 
         // Ruta de instalación
         JPanel instalacionPanel = new JPanel(new BorderLayout());
         instalacionPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         rutaInstalacionField = new JTextField();
         rutaInstalacionField.setEditable(false);
-        instalacionPanel.add(new JLabel("Ruta de Instalación:"), BorderLayout.NORTH);
+        instalacionPanel.add(new JLabel("Ruta del Juego:"), BorderLayout.NORTH);
         instalacionPanel.add(rutaInstalacionField, BorderLayout.CENTER);
         JButton seleccionarArchivoBtn = new JButton("Seleccionar Carpeta");
         seleccionarArchivoBtn.addActionListener(e -> seleccionarArchivo(rutaInstalacionField));
@@ -91,6 +125,18 @@ public class NewJuego extends JFrame {
         rightPanel.add(coverPreview);
 
         add(rightPanel, BorderLayout.EAST);
+        
+        //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL (Agregar DO_NOTHING_ON_CLOSE))
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                //Abrir Mi Perfil
+                SwingUtilities.invokeLater(() -> {
+                    MiPerfil miPerfil = new MiPerfil(mas);
+                    miPerfil.setVisible(true);
+                });
+                dispose();
+            }
+        });
 
         // Botón para guardar
         JButton guardarBtn = new JButton("Guardar Juego");
@@ -140,12 +186,15 @@ public class NewJuego extends JFrame {
         String nombre = nombreField.getText();
         String genero = generoField.getText();
         String desarrollador = desarrolladorField.getText();
-        String fechaLanzamiento = fechaLanzamientoField.getText();
+        String dia = diaField.getText();
+        Mes mes = (Mes) mesComboBox.getSelectedItem();
+        String anio = anioField.getText();
+        String fechaLanzamiento = dia + "/" + mes.ordinal() + "/" + anio;
         String rutaInstalacion = rutaInstalacionField.getText();
         String rutaImagen = rutaImagenField.getText();
 
         // Validaciones básicas
-        if (nombre.isEmpty() || genero.isEmpty() || desarrollador.isEmpty() || fechaLanzamiento.isEmpty()
+        if (nombre.isEmpty() || genero.isEmpty() || desarrollador.isEmpty() || dia.isEmpty() || anio.isEmpty()
                 || rutaInstalacion.isEmpty() || rutaImagen.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -159,9 +208,15 @@ public class NewJuego extends JFrame {
                 "Fecha de Lanzamiento: " + fechaLanzamiento + "\n" +
                 "Ruta de Instalación: " + rutaInstalacion + "\n" +
                 "Carátula: " + rutaImagen, "Información Guardada", JOptionPane.INFORMATION_MESSAGE);
+        
+    
+        
+        try {
+            mas.AddLibraryGame(nombre, genero, desarrollador, fechaLanzamiento, rutaInstalacion, rutaImagen);
+        } catch (IOException ex) {
+            Logger.getLogger(NewJuego.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(NewJuego::new);
-    }
+
 }

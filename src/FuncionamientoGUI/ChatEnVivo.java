@@ -1,4 +1,7 @@
 package FuncionamientoGUI;
+
+
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,12 +11,14 @@ import java.awt.event.WindowEvent;
 
 
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
 public class ChatEnVivo extends JFrame {
+     private Administrador mas;
 
     private JTextArea chatArea;
     private JTextField messageField;
@@ -21,7 +26,8 @@ public class ChatEnVivo extends JFrame {
     private JLabel titleLabel;
     private JList<String> userList;
 
-    public ChatEnVivo() {
+    public ChatEnVivo(Administrador mas) {
+        this.mas=mas;
         setTitle("Chat en Vivo");
         setSize(700, 600); // Ajustar tamaño para acomodar el panel lateral
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -103,7 +109,7 @@ public class ChatEnVivo extends JFrame {
             public void windowClosing(WindowEvent e) {
                 // Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
-                    MiPerfil miPerfil = new MiPerfil();
+                    MiPerfil miPerfil = new MiPerfil(mas);
                     miPerfil.setVisible(true);
                 });
                 dispose();
@@ -129,10 +135,5 @@ public class ChatEnVivo extends JFrame {
         return List.of("xd","aaa");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ChatEnVivo chat = new ChatEnVivo();
-            chat.setVisible(true);
-        });
-    }
+
 }

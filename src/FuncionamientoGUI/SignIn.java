@@ -4,17 +4,24 @@
  */
 package FuncionamientoGUI;
 
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SignIn extends JFrame {
+
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JCheckBox adminCheckBox;
+    private Administrador mas;
 
-    public SignIn() {
+    public SignIn(Administrador mas) {
+        this.mas = mas;
         setTitle("Crear Cuenta");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 400); // Tamaño ajustado
@@ -62,18 +69,29 @@ public class SignIn extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean isAdmin = adminCheckBox.isSelected();
 
+                // Verificar si los campos están vacíos
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor, rellena todas las casillas", "Error", JOptionPane.WARNING_MESSAGE);
                 } else {
-                    boolean crear = true; //Crear
-                    if (crear) {
-                        SwingUtilities.invokeLater(() -> {
-                            MiPerfil miPerfil = new MiPerfil();
-                            miPerfil.setVisible(true);
-                        });
-                        dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El username ya está en uso. Por favor, elige otro.", "Error", JOptionPane.ERROR_MESSAGE);
+                    try {
+                        // Llamada al método CreateUser para crear el nuevo usuario
+                        boolean crear = mas.CreateUser(username, password, isAdmin);
+
+                        // Comprobar si la creación fue exitosa
+                        if (crear) {
+                            SwingUtilities.invokeLater(() -> {
+                                MiPerfil miPerfil = new MiPerfil(mas);
+                                miPerfil.setVisible(true);
+                            });
+                            dispose(); // Cerrar la ventana de registro
+                        } else {
+                            // Si el usuario ya existe
+                            JOptionPane.showMessageDialog(null, "El username ya está en uso. Por favor, elige otro.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } catch (IOException ex) {
+                        // Manejo de excepciones: mostrar un mensaje de error si ocurre un problema de IO
+                        JOptionPane.showMessageDialog(null, "Error al crear el usuario. Inténtalo de nuevo.", "Error de I/O", JOptionPane.ERROR_MESSAGE);
+                        Logger.getLogger(SignIn.class.getName()).log(Level.SEVERE, "Error al crear el usuario", ex);
                     }
                 }
             }
@@ -83,7 +101,7 @@ public class SignIn extends JFrame {
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(() -> new Login());
+                SwingUtilities.invokeLater(() -> new Login(mas));
                 dispose();
             }
         });
@@ -91,8 +109,4 @@ public class SignIn extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(SignIn::new);
-    }
 }
-

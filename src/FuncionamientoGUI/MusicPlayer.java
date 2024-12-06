@@ -1,91 +1,122 @@
 package FuncionamientoGUI;
 
-
 import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.io.IOException;
+
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import javax.swing.JOptionPane;
 
 public class MusicPlayer extends JFrame {
-     private Administrador mas;
+
+    private Administrador mas;
+    private JList<String> songList;
+    private DefaultListModel<String> listModel;
+    private JButton playPauseButton, nextButton, previousButton;
+    private String carpetaMusica;
+    private JLabel songName, albumName, artistName;
+    private JLabel albumImage;
+    private RandomAccessFile musicFile;
 
     public MusicPlayer(Administrador mas) {
-        this.mas=mas;
+        this.mas = mas;
+        carpetaMusica = mas.MusicaUser;
         setTitle("Reproductor de Música");
-        setSize(600, 600); // Frame más ancho
+        setSize(600, 700);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Parte Superior: Now Playing
+        // Panel Superior: Imagen de la Canción, Nombre y Álbum
         JPanel panelSuperior = new JPanel();
         panelSuperior.setLayout(new BorderLayout());
         panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        JTextField nowPlayingField = new JTextField("Ninguna canción");
-        nowPlayingField.setEditable(false);
-        nowPlayingField.setFont(new Font("Arial", Font.PLAIN, 16));
-        
-        JLabel nowPlayingLabel = new JLabel("Now Playing:");
-        nowPlayingLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        panelSuperior.add(nowPlayingLabel, BorderLayout.WEST);
-        panelSuperior.add(nowPlayingField, BorderLayout.CENTER);
-        add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel Central: Botones de Control
+        // Imagen de la Canción
+        albumImage = new JLabel(new ImageIcon("src/Imagenes/CancionNull.png"));
+        albumImage.setHorizontalAlignment(JLabel.CENTER);
+        panelSuperior.add(albumImage, BorderLayout.NORTH);
+
+        // Nombre y Álbum
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        songName = new JLabel("Nombre de la Canción");
+        songName.setFont(new Font("Arial", Font.BOLD, 18));
+        artistName = new JLabel("Artista: Nombre del Artista");
+        artistName.setFont(new Font("Arial", Font.PLAIN, 14));
+        albumName = new JLabel("Álbum: Nombre del Álbum");
+        albumName.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        infoPanel.add(songName);
+        infoPanel.add(artistName);
+        infoPanel.add(albumName);
+        panelSuperior.add(infoPanel, BorderLayout.CENTER);
+
+        add(panelSuperior, BorderLayout.NORTH);
+        
+        //prueba
+        
+
+        // Panel Central: Slider de Progreso y Botones de Control
         JPanel panelControles = new JPanel();
         panelControles.setLayout(new BorderLayout());
 
-        JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20)); 
-        JButton previousButton = new JButton("Previous");
-        JButton playPauseButton = new JButton("Play"); // Luego se reemplaza con una imagen
-        JButton nextButton = new JButton("Next");
+        // Slider de Progreso
+        JSlider slider = new JSlider(0, 100, 0);
+        slider.setMajorTickSpacing(25);
+        slider.setPaintTicks(true);
+        panelControles.add(slider, BorderLayout.NORTH);
 
-        //Tamaños
-        playPauseButton.setPreferredSize(new Dimension(250, 200)); 
-        previousButton.setPreferredSize(new Dimension(100, 50));
-        nextButton.setPreferredSize(new Dimension(100, 50));
+        // Botones de Control
+        JPanel botonesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        previousButton = new JButton("Anterior");
+        playPauseButton = new JButton("Play/Pause");
+        nextButton = new JButton("Siguiente");
 
         botonesPanel.add(previousButton);
         botonesPanel.add(playPauseButton);
         botonesPanel.add(nextButton);
+        
+//        ImageIcon nextIcon = new ImageIcon("src/Imagenes/Next.png"); // Ruta de la imagen
+//        nextButton.setIcon(nextIcon);
+        
 
         panelControles.add(botonesPanel, BorderLayout.CENTER);
-
-        // Slider de progreso
-        JSlider slider = new JSlider(0, 100, 0);
-        slider.setMajorTickSpacing(25);
-        slider.setPaintTicks(true);
-        panelControles.add(slider, BorderLayout.SOUTH);
-
         add(panelControles, BorderLayout.CENTER);
 
-        // Panel Inferior: Lista de canciones y botones de gestión
+        // Panel Inferior: Lista de Canciones
         JPanel panelInferior = new JPanel();
         panelInferior.setLayout(new BorderLayout());
 
-        JPanel botonesInferioresPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        JButton addButton = new JButton("Agregar");
-        JButton removeButton = new JButton("Eliminar");
-        
-        botonesInferioresPanel.add(addButton);
-        botonesInferioresPanel.add(removeButton);
-
-        JList<String> songList = new JList<>(new DefaultListModel<>());
+        // Lista de Canciones
+        listModel = new DefaultListModel<>();
+        songList = new JList<>(listModel);
+        songList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedSong = songList.getSelectedValue();
+                loadSongDetails(selectedSong);
+            }
+        });
         JScrollPane songScrollPane = new JScrollPane(songList);
 
-        panelInferior.add(botonesInferioresPanel, BorderLayout.NORTH);
         panelInferior.add(songScrollPane, BorderLayout.CENTER);
-
         add(panelInferior, BorderLayout.SOUTH);
 
-      
-        //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL (Agregar DO_NOTHING_ON_CLOSE))
+        // Cargar las canciones de la carpeta
+        cargarCanciones(carpetaMusica);
+
+        // Evento de cierre
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                //Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
                     MiPerfil miPerfil = new MiPerfil(mas);
                     miPerfil.setVisible(true);
@@ -93,35 +124,51 @@ public class MusicPlayer extends JFrame {
                 dispose();
             }
         });
-        
-          // Listeners 
-        addButton.addActionListener(e -> {
-            String song = JOptionPane.showInputDialog("Ingrese el nombre de la canción:");
-            if (song != null && !song.isEmpty()) {
-                ((DefaultListModel<String>) songList.getModel()).addElement(song);
-            }
-        });
-
-        removeButton.addActionListener(e -> {
-            int selectedIndex = songList.getSelectedIndex();
-            if (selectedIndex != -1) {
-                ((DefaultListModel<String>) songList.getModel()).remove(selectedIndex);
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione una canción para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        previousButton.addActionListener(e -> {
-            // Acción para botón Previous
-        });
-
-        playPauseButton.addActionListener(e -> {
-            // Acción para botón Play/Pause
-        });
-
-        nextButton.addActionListener(e -> {
-            // Acción para botón Next
-        });
     }
 
+    // Método para cargar las canciones de una carpeta
+    private void cargarCanciones(String carpetaMusica) {
+        File folder = new File(carpetaMusica);
+        if (folder.exists() && folder.isDirectory()) {
+            FilenameFilter mp3Filter = (dir, name) -> name.endsWith(".mp3");
+            File[] mp3Files = folder.listFiles(mp3Filter);
+            if (mp3Files != null) {
+                for (File file : mp3Files) {
+                    listModel.addElement(file.getName());
+                }
+            }
+        }
+    }
+
+    // Método para cargar y mostrar la información de la canción
+    private void loadSongDetails(String songName) {
+        try {
+            File songFile = new File(carpetaMusica, songName);
+            musicFile = new RandomAccessFile(songFile, "r");
+
+            //Datos de la Rola
+            String title = musicFile.readUTF();  
+            String artist = musicFile.readUTF();  
+            String album = musicFile.readUTF();  
+            int duration = musicFile.readInt(); 
+            String musicPath = musicFile.readUTF(); //ruta de la cancion en formato mp3
+            String imagePath = musicFile.readUTF();  
+
+            //Cambiar JLabel
+            this.songName.setText(title);
+            artistName.setText(artist);
+            albumName.setText(album);
+            if (imagePath != null && !imagePath.isEmpty()) {
+                albumImage.setIcon(new ImageIcon(imagePath));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
+ 
+
+  

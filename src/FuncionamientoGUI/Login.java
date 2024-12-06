@@ -4,16 +4,20 @@
  */
 package FuncionamientoGUI;
 
+import ClassManejo.Administrador;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 public class Login extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JCheckBox showPasswordCheckBox;
+    private Administrador mas;
 
-    public Login() {
+    public Login(Administrador mas) {
+        this.mas=mas;
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 400); // Aumenta el tamaño del frame
@@ -76,28 +80,42 @@ public class Login extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
+                
+                
+                try {
+                    boolean log = mas.Login(username, password);
 
-                // Aquí puedes agregar lógica para validar el login
-                SwingUtilities.invokeLater(() -> {
-                    MiPerfil miPerfil = new MiPerfil();
-                    miPerfil.setVisible(true);
-                });
+                    if (log) {
+                        SwingUtilities.invokeLater(() -> {
+                            setVisible(false);
+                            MiPerfil miPerfil = new MiPerfil(mas);
+                            miPerfil.setVisible(true);
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Los datos no Coinciden con la base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (IOException ex) {
+                    // Manejo del error si ocurre una IOException
+                    JOptionPane.showMessageDialog(null, "Error al intentar iniciar sesión. "
+                            + "Por favor, intente nuevamente más tarde.", "Error de I/O", JOptionPane.ERROR_MESSAGE);
+                }
             }
+
         });
 
         // Acción del botón Crear Cuenta
         signInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(() -> new SignIn());
+                setVisible(false);
+                SignIn menu = new SignIn(mas);
+                menu.setVisible(true);
             }
         });
 
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Login::new);
-    }
+
 }
 

@@ -14,10 +14,12 @@ import java.util.HashMap;
 
 
 public class Main {
-    public Administrador mas;
     
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Login());
+        Administrador mas= new Administrador();
+        
+        Login menu = new Login(mas);
+        menu.setVisible(true);
     }
 }
 

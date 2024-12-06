@@ -20,10 +20,24 @@ import java.util.Date;
  */
 public class Juego extends GM{
     
+    private RandomAccessFile Game;
+    private String name;
+    private String genero;
+    private String desarrollador;
+    private String releaseDate;
+    private String rutaGame;
+    private String rutaImagen;
 
-    public Juego(String name, String genero, String desarrollador, String releaseDate, String rutagame, String rutaImagen) {
-
+    public Juego(String name, String genero, String desarrollador, String releaseDate, String rutaGame, String rutaImagen) {
+        this.name = name;
+        this.genero = genero;
+        this.desarrollador = desarrollador;
+        this.releaseDate = releaseDate;
+        this.rutaGame = rutaGame;
+        this.rutaImagen = rutaImagen;
     }
+
+
 
     @Override
     public String PrintList(RandomAccessFile games) throws IOException {
@@ -44,7 +58,8 @@ public class Juego extends GM{
         }
         return "StringBuilder";
     }
-        
+      
+    
     
     
 

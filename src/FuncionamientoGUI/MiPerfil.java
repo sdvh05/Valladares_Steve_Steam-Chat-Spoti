@@ -8,13 +8,16 @@ package FuncionamientoGUI;
  *
  * @author Hp
  */
+import ClassManejo.Administrador;
+import FuncionamientoGUI.TESTchat.ChatCliente;
+import FuncionamientoGUI.TESTchat.ChatEnVivoo;
 import javax.swing.*; 
 import java.awt.*;
 import javax.swing.SwingUtilities;
 
  // Enum para opciones de música
     enum OpcionMusica {
-        Reproductor, Agregar_Biblioteca
+        Reproductor, Agregar_Biblioteca, Mi_Musica;
     }
 
     // Enum para opciones de juegos
@@ -23,8 +26,10 @@ import javax.swing.SwingUtilities;
     }
 
 public class MiPerfil extends JFrame {
+    private Administrador mas;
 
-    public MiPerfil() {
+    public MiPerfil(Administrador mas) {
+        this.mas=mas;
         setTitle("Mi Perfil");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,7 +81,7 @@ public class MiPerfil extends JFrame {
 
         // Listeners
         botonMusica.addActionListener(e -> {
-            OpcionMusica[] opcionesMusica = {OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca};
+            OpcionMusica[] opcionesMusica = {OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca, OpcionMusica.Mi_Musica};
             int seleccionMusica = JOptionPane.showOptionDialog(
                     null,
                     "¿Qué acción desea realizar con la música?",
@@ -92,15 +97,26 @@ public class MiPerfil extends JFrame {
                 switch (opcionSeleccionadaMusica) {
                     case Reproductor:
                         SwingUtilities.invokeLater(() -> {
-                            MusicPlayer frame = new MusicPlayer();
+                            MusicPlayer frame = new MusicPlayer(mas);
                             frame.setVisible(true);
+                            this.dispose();
                         });
                         break;
                     case Agregar_Biblioteca:
+                        if (mas.Permisos) {
+                            SwingUtilities.invokeLater(() -> {
+                                NewMusic frame = new NewMusic(mas);
+                                frame.setVisible(true);
+                                this.dispose();
+                            });
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
+                        }
+                        break;
+                    case Mi_Musica:
                         SwingUtilities.invokeLater(() -> {
-                            NewMusic frame = new NewMusic();
+                            AgregarMiMusica frame = new AgregarMiMusica(mas);
                             frame.setVisible(true);
-                            this.dispose();
                         });
                         break;
                 }
@@ -127,14 +143,23 @@ public class MiPerfil extends JFrame {
                 OpcionJuegos opcionSeleccionadaJuegos = opcionesJuegos[seleccionJuegos];
                 switch (opcionSeleccionadaJuegos) {
                     case Ver_mis_Juegos:
-                        // Abir "Ver mis Juegos"
+                        SwingUtilities.invokeLater(() -> {
+                            MiSteam frame = new MiSteam (mas);
+                            frame.setVisible(true);
+                            this.dispose();
+                        });                        
                         break;
                     case Añadir_Juegos:
-                        SwingUtilities.invokeLater(() -> {
-                            NewJuego frame = new NewJuego();
+                        if (mas.Permisos) {
+                            SwingUtilities.invokeLater(() -> {
+                            NewJuego frame = new NewJuego(mas);
                             frame.setVisible(true);
                             this.dispose();
                         });
+                        }else{
+                            JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
+                        }
+                        
                         break;
                 }
             } else {
@@ -143,9 +168,16 @@ public class MiPerfil extends JFrame {
         });
 
         botonChat.addActionListener(e -> {
+//            SwingUtilities.invokeLater(() -> {
+//                ChatEnVivoo chat = new ChatEnVivoo(mas);
+//                chat.setVisible(true);
+//                chat.iniciarServidor();
+//                this.dispose();
+//            });
+
             SwingUtilities.invokeLater(() -> {
-                ChatEnVivo frame = new ChatEnVivo();
-                frame.setVisible(true);
+                ChatCliente chat = new ChatCliente(mas,mas.UserLog,"localhost",12345);
+                chat.setVisible(true);
                 this.dispose();
             });
         });
@@ -156,18 +188,11 @@ public class MiPerfil extends JFrame {
             int respuesta = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Confirmar Cierre de Sesión", JOptionPane.YES_NO_OPTION);
             if (respuesta == JOptionPane.YES_OPTION) {
                 SwingUtilities.invokeLater(() -> {
-                    Login frame = new Login(); 
+                    Login frame = new Login(mas); 
                     frame.setVisible(true);
                     this.dispose();
                 });
             }
-        });
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MiPerfil frame = new MiPerfil();
-            frame.setVisible(true);
         });
     }
 }
