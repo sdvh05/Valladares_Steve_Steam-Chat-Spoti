@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NewJuego extends JFrame {
+
     private JTextField nombreField;
     private JTextField generoField;
     private JTextField desarrolladorField;
@@ -22,16 +23,15 @@ public class NewJuego extends JFrame {
     private JTextField rutaImagenField;
     private JLabel coverPreview;
     private JLabel discoPreview;
-    
+
     private Administrador mas;
-    
 
     public enum Mes {
         Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre
     }
 
     public NewJuego(Administrador mas) {
-        this.mas=mas;
+        this.mas = mas;
         setTitle("Añadir Nuevo Juego");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(700, 500);
@@ -125,7 +125,7 @@ public class NewJuego extends JFrame {
         rightPanel.add(coverPreview);
 
         add(rightPanel, BorderLayout.EAST);
-        
+
         //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL (Agregar DO_NOTHING_ON_CLOSE))
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -201,22 +201,33 @@ public class NewJuego extends JFrame {
         }
 
         // Mostrar datos ingresados
-        JOptionPane.showMessageDialog(this, "Juego Guardado:\n" +
-                "Nombre: " + nombre + "\n" +
-                "Género: " + genero + "\n" +
-                "Desarrollador: " + desarrollador + "\n" +
-                "Fecha de Lanzamiento: " + fechaLanzamiento + "\n" +
-                "Ruta de Instalación: " + rutaInstalacion + "\n" +
-                "Carátula: " + rutaImagen, "Información Guardada", JOptionPane.INFORMATION_MESSAGE);
-        
-    
-        
+        JOptionPane.showMessageDialog(this, "Juego Guardado:\n"
+                + "Nombre: " + nombre + "\n"
+                + "Género: " + genero + "\n"
+                + "Desarrollador: " + desarrollador + "\n"
+                + "Fecha de Lanzamiento: " + fechaLanzamiento + "\n"
+                + "Ruta de Instalación: " + rutaInstalacion + "\n"
+                + "Carátula: " + rutaImagen, "Información Guardada", JOptionPane.INFORMATION_MESSAGE);
+
         try {
             mas.AddLibraryGame(nombre, genero, desarrollador, fechaLanzamiento, rutaInstalacion, rutaImagen);
+            limpiarCampos();
         } catch (IOException ex) {
             Logger.getLogger(NewJuego.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
+    private void limpiarCampos() {
+        nombreField.setText("");
+        generoField.setText("");
+        desarrolladorField.setText("");
+        diaField.setText("");
+        mesComboBox.setSelectedIndex(0); // Selecciona el primer mes
+        anioField.setText("");
+        rutaInstalacionField.setText("");
+        rutaImagenField.setText("");
+        coverPreview.setIcon(null); // Limpia la imagen de preview
+    }
 
 }

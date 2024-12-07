@@ -18,8 +18,12 @@ public class Main {
     public static void main(String[] args) {
         Administrador mas= new Administrador();
         
+//        MusicPlayer mus=new MusicPlayer(mas);
+//        mus.reproducir("C:\\Users\\Hp\\OneDrive\\Documentos\\NetBeansProjects\\Proyecto2Progra2\\AdminProyect\\RutaDeLaMusica\\Musica\\Ruta\\Air - Shawn Mendes ft. Astrid lyrics.mp3");
+
         Login menu = new Login(mas);
         menu.setVisible(true);
+        
     }
 }
 

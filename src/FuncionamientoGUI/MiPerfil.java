@@ -4,32 +4,29 @@
  */
 package FuncionamientoGUI;
 
-/**
- *
- * @author Hp
- */
 import ClassManejo.Administrador;
 import FuncionamientoGUI.TESTchat.ChatCliente;
 import FuncionamientoGUI.TESTchat.ChatEnVivoo;
-import javax.swing.*; 
+import FuncionamientoGUI.TESTchat.try3.ServidorChat;
+import javax.swing.*;
 import java.awt.*;
 import javax.swing.SwingUtilities;
 
  // Enum para opciones de música
-    enum OpcionMusica {
-        Reproductor, Agregar_Biblioteca, Mi_Musica;
-    }
+enum OpcionMusica {
+    Reproductor, Agregar_Biblioteca, Mi_Musica;
+}
 
-    // Enum para opciones de juegos
-    enum OpcionJuegos {
-        Ver_mis_Juegos, Añadir_Juegos
-    }
+// Enum para opciones de juegos
+enum OpcionJuegos {
+    Ver_mis_Juegos, Añadir_Juegos
+}
 
 public class MiPerfil extends JFrame {
     private Administrador mas;
 
     public MiPerfil(Administrador mas) {
-        this.mas=mas;
+        this.mas = mas;
         setTitle("Mi Perfil");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,13 +68,15 @@ public class MiPerfil extends JFrame {
         panelCentral.add(botonChat);
         add(panelCentral, BorderLayout.CENTER);
 
-
         // Panel cerrar Sesión
         JPanel panelInferior = new JPanel();
         panelInferior.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
         JButton cerrarSesion = new JButton("Cerrar Sesión");
         panelInferior.add(cerrarSesion);
         add(panelInferior, BorderLayout.SOUTH);
+
+        // Iniciar el servidor en segundo plano
+        //iniciarServidor();
 
         // Listeners
         botonMusica.addActionListener(e -> {
@@ -125,8 +124,6 @@ public class MiPerfil extends JFrame {
             }
         });
 
-        
-        
         botonJuego.addActionListener(e -> {
             OpcionJuegos[] opcionesJuegos = {OpcionJuegos.Ver_mis_Juegos, OpcionJuegos.Añadir_Juegos};
             int seleccionJuegos = JOptionPane.showOptionDialog(
@@ -144,22 +141,21 @@ public class MiPerfil extends JFrame {
                 switch (opcionSeleccionadaJuegos) {
                     case Ver_mis_Juegos:
                         SwingUtilities.invokeLater(() -> {
-                            MiSteam frame = new MiSteam (mas);
+                            MiSteam frame = new MiSteam(mas);
                             frame.setVisible(true);
                             this.dispose();
-                        });                        
+                        });
                         break;
                     case Añadir_Juegos:
                         if (mas.Permisos) {
                             SwingUtilities.invokeLater(() -> {
-                            NewJuego frame = new NewJuego(mas);
-                            frame.setVisible(true);
-                            this.dispose();
-                        });
-                        }else{
+                                NewJuego frame = new NewJuego(mas);
+                                frame.setVisible(true);
+                                this.dispose();
+                            });
+                        } else {
                             JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
                         }
-                        
                         break;
                 }
             } else {
@@ -168,32 +164,37 @@ public class MiPerfil extends JFrame {
         });
 
         botonChat.addActionListener(e -> {
-//            SwingUtilities.invokeLater(() -> {
-//                ChatEnVivoo chat = new ChatEnVivoo(mas);
-//                chat.setVisible(true);
-//                chat.iniciarServidor();
-//                this.dispose();
-//            });
-
             SwingUtilities.invokeLater(() -> {
-                ChatCliente chat = new ChatCliente(mas,mas.UserLog,"localhost",12345);
+                ChatCliente chat = new ChatCliente(mas, mas.UserLog, "localhost", 12345);
                 chat.setVisible(true);
                 this.dispose();
             });
         });
 
-        
-        
         cerrarSesion.addActionListener(e -> {
             int respuesta = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Confirmar Cierre de Sesión", JOptionPane.YES_NO_OPTION);
             if (respuesta == JOptionPane.YES_OPTION) {
                 SwingUtilities.invokeLater(() -> {
-                    Login frame = new Login(mas); 
+                    Login frame = new Login(mas);
                     frame.setVisible(true);
                     this.dispose();
                 });
             }
         });
     }
-}
 
+//    private void iniciarServidor() {
+//        mas.openServer();
+//        Thread servidorThread = new Thread(() -> {
+//            try {
+//                if (mas.open) {
+//                    ServidorChat.main(new String[0]);
+//
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        servidorThread.start();
+//    }
+}

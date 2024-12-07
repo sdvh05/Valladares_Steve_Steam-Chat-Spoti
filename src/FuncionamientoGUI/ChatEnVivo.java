@@ -8,10 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -78,9 +74,6 @@ public class ChatEnVivo extends JFrame {
         //Jlist en si
         DefaultListModel<String> listModel = new DefaultListModel<>();
         listModel.addElement("Chat General");
-        for (String user : obtenerUsuariosRegistrados()) {
-            listModel.addElement(user);
-        }
 
         userList = new JList<>(listModel);
         userList.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -129,11 +122,6 @@ public class ChatEnVivo extends JFrame {
         }
     }
 
-    // Método ficticio para obtener usuarios registrados
-    private List<String> obtenerUsuariosRegistrados() {
-        // Aquí deberías agregar la lógica real para obtener los usuarios registrados
-        return List.of("xd","aaa");
-    }
 
 
 }

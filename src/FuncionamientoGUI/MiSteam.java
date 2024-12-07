@@ -23,7 +23,78 @@ public class MiSteam extends JFrame {
     private JPanel detailsPanel; 
     private JLabel gameNameLabel, genreLabel, developerLabel, releaseDateLabel, gamePathLabel;
     private JLabel gameImageLabel; 
+    
+    
+    
+    class GameCellRenderer extends JPanel implements ListCellRenderer<String> {
+    private JLabel iconLabel;
+    private JLabel nameLabel;
+    private JLabel developerLabel;
 
+    public GameCellRenderer() {
+        setLayout(new BorderLayout(5, 5));
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        setBackground(Color.WHITE);
+
+        iconLabel = new JLabel();
+        iconLabel.setPreferredSize(new Dimension(64, 64)); // Tamaño pequeño para la imagen
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+
+        nameLabel = new JLabel();
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        developerLabel = new JLabel();
+        developerLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        developerLabel.setForeground(Color.GRAY);
+
+        textPanel.add(nameLabel);
+        textPanel.add(developerLabel);
+
+        add(iconLabel, BorderLayout.WEST);
+        add(textPanel, BorderLayout.CENTER);
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+            JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
+
+        // Leer información del juego
+        Path gamePath = Paths.get(list == libraryList ? "AdminProyect/BibliotecaSteam" : mas.GameUser, value);
+        try (RandomAccessFile gameFile = new RandomAccessFile(gamePath.toFile(), "r")) {
+            String name = gameFile.readUTF();
+            String genre = gameFile.readUTF();
+            String developer = gameFile.readUTF();
+            gameFile.readUTF(); // Fecha de lanzamiento (omitimos aquí)
+            gameFile.readUTF(); // Ruta del juego (omitimos aquí)
+            String imagePath = gameFile.readUTF();
+
+            // Configurar la celda
+            nameLabel.setText(name);
+            developerLabel.setText(developer);
+
+            // Cargar y escalar la imagen
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image scaledImage = icon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+            iconLabel.setIcon(new ImageIcon(scaledImage));
+
+        } catch (IOException e) {
+            nameLabel.setText("Error al leer datos");
+            developerLabel.setText("");
+            iconLabel.setIcon(null);
+        }
+
+        // Resaltar si está seleccionada
+        setBackground(isSelected ? new Color(200, 230, 255) : Color.WHITE);
+        setOpaque(isSelected);
+
+        return this;
+    }
+}
+
+    //CLASE MI STEAM
+//--------------------------------------------------------------------------------------------------------------------------------------------    
     public MiSteam(Administrador mas) {
         this.mas = mas;
         this.sourceFolderPath = "AdminProyect/BibliotecaSteam";
@@ -62,19 +133,31 @@ public class MiSteam extends JFrame {
         detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
         detailsPanel.setBorder(BorderFactory.createTitledBorder("Detalles del Juego"));
 
+
+        int labelFontSize = 16; 
+        int spacing = 10;      
+
         gameNameLabel = new JLabel("Nombre: ");
         genreLabel = new JLabel("Género: ");
         developerLabel = new JLabel("Desarrollador: ");
         releaseDateLabel = new JLabel("Fecha de lanzamiento: ");
         gamePathLabel = new JLabel("Ruta del juego: ");
-        gameImageLabel = new JLabel(); // Imagen del juego
+
+        gameNameLabel.setFont(new Font("Arial", Font.PLAIN, labelFontSize));
+        genreLabel.setFont(new Font("Arial", Font.PLAIN, labelFontSize));
+        developerLabel.setFont(new Font("Arial", Font.PLAIN, labelFontSize));
+        releaseDateLabel.setFont(new Font("Arial", Font.PLAIN, labelFontSize));
+        gamePathLabel.setFont(new Font("Arial", Font.PLAIN, labelFontSize));
 
         detailsPanel.add(gameNameLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, spacing))); 
         detailsPanel.add(genreLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, spacing))); 
         detailsPanel.add(developerLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, spacing))); 
         detailsPanel.add(releaseDateLabel);
+        detailsPanel.add(Box.createRigidArea(new Dimension(0, spacing))); 
         detailsPanel.add(gamePathLabel);
-        detailsPanel.add(gameImageLabel);
 
         // Panel derecho inferior: Mis Juegos
         JPanel myGamesPanel = new JPanel();
@@ -120,7 +203,7 @@ public class MiSteam extends JFrame {
         moveButton.addActionListener(e -> moveGameToAdded());
         moveButtonPanel.add(moveButton);
 
-// Botón para eliminar juegos de Mis Juegos
+        // Botón para eliminar juegos de Mis Juegos
         JButton deleteButton = new JButton("Eliminar de Mis Juegos");
         deleteButton.addActionListener(e -> deleteGameFromAdded());
         moveButtonPanel.add(deleteButton);
@@ -135,6 +218,9 @@ public class MiSteam extends JFrame {
         // Cargar juegos desde las carpetas
         loadLibraryGames();
         loadAddedGames();
+        GameCellRenderer renderer = new GameCellRenderer();
+        libraryList.setCellRenderer(renderer);
+        addedList.setCellRenderer(renderer);
     }
 
     // Cargar juegos disponibles
@@ -184,8 +270,8 @@ public class MiSteam extends JFrame {
                 releaseDateLabel.setText("Fecha de lanzamiento: " + releaseDate);
                 gamePathLabel.setText("Ruta del juego: " + gamePathStr);
 
-                gameImageLabel.setIcon(new ImageIcon(imagePath));
-                gameImageLabel.setText("");
+//                gameImageLabel.setIcon(new ImageIcon(imagePath));
+//                gameImageLabel.setText("");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error al leer el archivo del juego.");
             }
@@ -210,8 +296,8 @@ public class MiSteam extends JFrame {
                 releaseDateLabel.setText("Fecha de lanzamiento: " + releaseDate);
                 gamePathLabel.setText("Ruta del juego: " + gamePathStr);
 
-                gameImageLabel.setIcon(new ImageIcon(imagePath));
-                gameImageLabel.setText("");
+//                gameImageLabel.setIcon(new ImageIcon(imagePath));
+//                gameImageLabel.setText("");
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error al leer el archivo del juego.");
             }
@@ -261,3 +347,5 @@ public class MiSteam extends JFrame {
         }
     }
 }
+
+

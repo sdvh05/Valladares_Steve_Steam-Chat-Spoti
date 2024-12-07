@@ -32,11 +32,10 @@ import javax.swing.JOptionPane;
 public class Administrador {
 
     protected static String Path = "AdminProyect";
-    private int usuariosConectados = 0;
-    private ArrayList<Usuario> ListUs;
+    public int usuariosConectados = 0;
     public Usuario UserAct;
     public String UserLog, MusicaUser, GameUser; //Guargar lo que necesito, las carpetas y el User
-    public boolean Permisos;
+    public boolean Permisos, open;
     
     private RandomAccessFile users, newSong, newGame;
 
@@ -115,6 +114,7 @@ public class Administrador {
 
             Usuario newuser = new Usuario(username, pass, admin);
             JOptionPane.showMessageDialog(null, "SE HA REGISTRADO CORRECTAMENTE");
+            this.usuariosConectados++;
             return true;
         }
         return false;
@@ -136,7 +136,7 @@ public class Administrador {
             }
             System.out.println(MusicaUser);
             System.out.println(GameUser);
-            
+            this.usuariosConectados++;
             return true;
         }
 
@@ -157,6 +157,10 @@ public class Administrador {
             }
         }
         return false;
+    }
+    
+    private void Logout(){
+        this.usuariosConectados--;
     }
 //--------------------------------------------------------------------------------------------------------------------------------------
  
@@ -200,5 +204,15 @@ public class Administrador {
     public synchronized int getUsuariosConectados() {
         return usuariosConectados;
     }
+    
+    public void openServer(){
+        if (this.usuariosConectados==1 && this.open==false) {
+            this.open=true;
+        }else{
+            this.open=false;
+        }
+    }
+   
+
 
 }
