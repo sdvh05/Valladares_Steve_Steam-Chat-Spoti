@@ -75,12 +75,18 @@ public class MiPerfil extends JFrame {
         panelInferior.add(cerrarSesion);
         add(panelInferior, BorderLayout.SOUTH);
 
-        // Iniciar el servidor en segundo plano
-        //iniciarServidor();
+
 
         // Listeners
-        botonMusica.addActionListener(e -> {
-            OpcionMusica[] opcionesMusica = {OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca, OpcionMusica.Mi_Musica};
+        botonMusica.addActionListener(e -> {  
+            
+            OpcionMusica[] opcionesMusica;
+            if (mas.Permisos) {
+                opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca, OpcionMusica.Mi_Musica};
+            } else {
+                opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Mi_Musica};
+            }
+            
             int seleccionMusica = JOptionPane.showOptionDialog(
                     null,
                     "¿Qué acción desea realizar con la música?",
@@ -125,7 +131,14 @@ public class MiPerfil extends JFrame {
         });
 
         botonJuego.addActionListener(e -> {
-            OpcionJuegos[] opcionesJuegos = {OpcionJuegos.Ver_mis_Juegos, OpcionJuegos.Añadir_Juegos};
+            
+            OpcionJuegos[] opcionesJuegos;
+            if (mas.Permisos) {
+                opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos, OpcionJuegos.Añadir_Juegos};
+            }else{
+               opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos};
+            }
+            
             int seleccionJuegos = JOptionPane.showOptionDialog(
                     null,
                     "¿Qué acción desea realizar con los juegos?",
@@ -182,19 +195,4 @@ public class MiPerfil extends JFrame {
             }
         });
     }
-
-//    private void iniciarServidor() {
-//        mas.openServer();
-//        Thread servidorThread = new Thread(() -> {
-//            try {
-//                if (mas.open) {
-//                    ServidorChat.main(new String[0]);
-//
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        servidorThread.start();
-//    }
 }

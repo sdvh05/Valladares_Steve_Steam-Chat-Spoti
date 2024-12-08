@@ -8,7 +8,6 @@ import java.io.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
@@ -124,8 +123,6 @@ public class Administrador {
         if (verificarLog(Username, Pass)) {
             UserLog=Username;
             Permisos=users.readBoolean();
-            System.out.println(Permisos);
-            System.out.println(UserLog);
             
             if (Permisos) {
                 MusicaUser=Path+"/Usuarios/ADMIN."+Username+"/Musica";
@@ -134,8 +131,6 @@ public class Administrador {
                 MusicaUser=Path+"/Usuarios/USER."+Username+"/Musica";
                 GameUser=Path+"/Usuarios/USER."+Username+"/Juegos"; 
             }
-            System.out.println(MusicaUser);
-            System.out.println(GameUser);
             this.usuariosConectados++;
             return true;
         }
@@ -152,7 +147,7 @@ public class Administrador {
             users.skipBytes(1);
 
             if (name.equals(Username) && pass.equals(Password)) {
-                users.seek(pos);
+                users.seek(pos); //puntero listo solo para leer boolean admin
                 return true;
             }
         }
@@ -188,7 +183,7 @@ public class Administrador {
         newGame.writeUTF(rutaImagen);
         return newGame;  
     }
-    //---------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------
 
     //Server:
     public synchronized void incrementarContadorUsuariosConectados() {
