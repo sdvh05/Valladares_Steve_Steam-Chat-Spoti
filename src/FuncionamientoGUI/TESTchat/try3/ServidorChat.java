@@ -1,4 +1,5 @@
 package FuncionamientoGUI.TESTchat.try3;
+
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -11,12 +12,16 @@ public class ServidorChat {
         System.out.println("Servidor iniciado...");
         try (ServerSocket servidor = new ServerSocket(PUERTO)) {
             while (true) {
-                Socket socket = servidor.accept();
-                System.out.println("Cliente conectado: " + socket.getInetAddress());
-                new Thread(new ManejadorCliente(socket)).start();
+                try {
+                    Socket socket = servidor.accept();
+                    System.out.println("Cliente conectado: " + socket.getInetAddress());
+                    new Thread(new ManejadorCliente(socket)).start();
+                } catch (IOException e) {
+                    System.err.println("Error al aceptar cliente: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error al iniciar el servidor: " + e.getMessage());
         }
     }
 
@@ -43,7 +48,7 @@ public class ServidorChat {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Error en la comunicación con un cliente: " + e.getMessage());
             } finally {
                 if (salida != null) {
                     clientes.remove(salida);
@@ -51,7 +56,7 @@ public class ServidorChat {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.err.println("Error al cerrar el socket: " + e.getMessage());
                 }
                 System.out.println("Cliente desconectado.");
             }

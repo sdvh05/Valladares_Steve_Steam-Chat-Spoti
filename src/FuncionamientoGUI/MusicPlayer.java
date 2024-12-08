@@ -24,7 +24,7 @@ public class MusicPlayer extends JFrame {
     private JLabel songName, albumName, artistName;
     private JLabel albumImage;
     private RandomAccessFile musicFile;
-    private String currentSongPath;
+    private String currentSongPath,artist,titlee;
     private boolean isPlaying;
     private Clip clip;
     private Player player;
@@ -127,6 +127,8 @@ public class MusicPlayer extends JFrame {
                 loadSongDetails(selectedSong);
             }
         });
+        songList.setCellRenderer(new SongListCellRenderer());
+        songList.setPreferredSize(new Dimension(400, 300));
         JScrollPane songScrollPane = new JScrollPane(songList);
 
         panelInferior.add(songScrollPane, BorderLayout.CENTER);
@@ -188,17 +190,17 @@ public class MusicPlayer extends JFrame {
             musicFile = new RandomAccessFile(songFile, "r");
 
             // Datos de la Canción
-            String title = musicFile.readUTF();
-            String artist = musicFile.readUTF();
+            titlee = musicFile.readUTF();
+            artist = musicFile.readUTF();
             String album = musicFile.readUTF();
             int duration = musicFile.readInt();
             musicPath = musicFile.readUTF(); // ruta de la canción en formato mp3
             String imagePath = musicFile.readUTF();
 
-            System.out.println("Ruta de la canción: " + musicPath);
+            //System.out.println("Ruta de la canción: " + musicPath);
 
             // Cambiar JLabel
-            this.songName.setText(title);
+            this.songName.setText(titlee);
             artistName.setText(artist);
             albumName.setText(album);
             if (imagePath != null && !imagePath.isEmpty()) {
@@ -264,5 +266,30 @@ public class MusicPlayer extends JFrame {
             }
         }
     }
+    private class SongListCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            String songName = (String) value;
+            try {
+                File songFile = new File(carpetaMusica, songName);
+                RandomAccessFile musicFile = new RandomAccessFile(songFile, "r");
 
+                // Cargar los detalles de la canción
+                String title = musicFile.readUTF();
+                String artist = musicFile.readUTF();
+
+                // Formatear el texto
+                setText("<html><b>" + title + "</b> | " + artist + "</html>");
+                setFont(new Font("Arial", Font.PLAIN, 14));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return this;
+        }
+    }
 }
+
+
+

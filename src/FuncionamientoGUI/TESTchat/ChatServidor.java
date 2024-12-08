@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+//SERVER BUENO
+
 public class ChatServidor {
     private static final int PUERTO = 12345;
     private static final Set<ObjectOutputStream> CLIENTES = Collections.synchronizedSet(new HashSet<>());

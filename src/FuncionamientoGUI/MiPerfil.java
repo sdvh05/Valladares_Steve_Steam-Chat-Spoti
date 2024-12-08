@@ -6,20 +6,16 @@ package FuncionamientoGUI;
 
 import ClassManejo.Administrador;
 import FuncionamientoGUI.TESTchat.ChatCliente;
-import FuncionamientoGUI.TESTchat.ChatEnVivoo;
-import FuncionamientoGUI.TESTchat.try3.ServidorChat;
+
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.SwingUtilities;
 
- // Enum para opciones de música
 enum OpcionMusica {
     Reproductor, Agregar_Biblioteca, Mi_Musica;
 }
 
-// Enum para opciones de juegos
 enum OpcionJuegos {
-    Ver_mis_Juegos, Añadir_Juegos
+    Ver_mis_Juegos, Añadir_Juegos;
 }
 
 public class MiPerfil extends JFrame {
@@ -27,155 +23,61 @@ public class MiPerfil extends JFrame {
 
     public MiPerfil(Administrador mas) {
         this.mas = mas;
-        setTitle("Mi Perfil");
+        setTitle("Perfil de "+mas.UserLog);
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Panel Title
+        // Panel superior con título
         JPanel panelSuperior = new JPanel();
         panelSuperior.setLayout(new BorderLayout());
         panelSuperior.setPreferredSize(new Dimension(600, 100));
-        JLabel titulo = new JLabel("Opciones de: ", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Opciones de "+mas.UserLog, SwingConstants.CENTER);
         titulo.setFont(new Font("Arial", Font.BOLD, 20));
         panelSuperior.add(titulo, BorderLayout.CENTER);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Main Panel
+        // Panel central con botones
         JPanel panelCentral = new JPanel();
-        panelCentral.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // FlowLayout para botones en línea
+        panelCentral.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Botones en línea
         panelCentral.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Botones principales
-        JButton botonMusica = new JButton("Música");
-        botonMusica.setPreferredSize(new Dimension(150, 50));
-        botonMusica.setFont(new Font("Arial", Font.BOLD, 16));
-        botonMusica.setBackground(Color.green);
+        // Crear botones con imágenes e íconos redimensionados
+        JButton botonMusica = crearBotonConIcono(
+                "Música",
+                new ImageIcon("src/Imagenes/MusicGreen.jpg"),
+                "Música"
+        );
 
-        JButton botonJuego = new JButton("Juego");
-        botonJuego.setPreferredSize(new Dimension(150, 50));
-        botonJuego.setFont(new Font("Arial", Font.BOLD, 16));
-        botonJuego.setBackground(Color.cyan);
+        JButton botonJuego = crearBotonConIcono(
+                "Juego",
+                new ImageIcon("src/Imagenes/Steammenu.jpeg"),
+                "Juego"
+        );
 
-        JButton botonChat = new JButton("Chat");
-        botonChat.setPreferredSize(new Dimension(150, 50));
-        botonChat.setFont(new Font("Arial", Font.BOLD, 16));
-        botonChat.setBackground(Color.red);
+        JButton botonChat = crearBotonConIcono(
+                "Chat",
+                new ImageIcon("src/Imagenes/ChatLogo.jpg"),
+                "Chat"
+        );
 
+        // Agregar botones al panel central
         panelCentral.add(botonMusica);
         panelCentral.add(botonJuego);
         panelCentral.add(botonChat);
         add(panelCentral, BorderLayout.CENTER);
 
-        // Panel cerrar Sesión
+        // Panel inferior con botón de cerrar sesión
         JPanel panelInferior = new JPanel();
         panelInferior.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 20));
         JButton cerrarSesion = new JButton("Cerrar Sesión");
         panelInferior.add(cerrarSesion);
         add(panelInferior, BorderLayout.SOUTH);
 
-
-
-        // Listeners
-        botonMusica.addActionListener(e -> {  
-            
-            OpcionMusica[] opcionesMusica;
-            if (mas.Permisos) {
-                opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca, OpcionMusica.Mi_Musica};
-            } else {
-                opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Mi_Musica};
-            }
-            
-            int seleccionMusica = JOptionPane.showOptionDialog(
-                    null,
-                    "¿Qué acción desea realizar con la música?",
-                    "Opciones de Música",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opcionesMusica,
-                    opcionesMusica[0]);
-
-            if (seleccionMusica >= 0 && seleccionMusica < opcionesMusica.length) {
-                OpcionMusica opcionSeleccionadaMusica = opcionesMusica[seleccionMusica];
-                switch (opcionSeleccionadaMusica) {
-                    case Reproductor:
-                        SwingUtilities.invokeLater(() -> {
-                            MusicPlayer frame = new MusicPlayer(mas);
-                            frame.setVisible(true);
-                            this.dispose();
-                        });
-                        break;
-                    case Agregar_Biblioteca:
-                        if (mas.Permisos) {
-                            SwingUtilities.invokeLater(() -> {
-                                NewMusic frame = new NewMusic(mas);
-                                frame.setVisible(true);
-                                this.dispose();
-                            });
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
-                        }
-                        break;
-                    case Mi_Musica:
-                        SwingUtilities.invokeLater(() -> {
-                            AgregarMiMusica frame = new AgregarMiMusica(mas);
-                            frame.setVisible(true);
-                        });
-                        break;
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para música.");
-            }
-        });
-
-        botonJuego.addActionListener(e -> {
-            
-            OpcionJuegos[] opcionesJuegos;
-            if (mas.Permisos) {
-                opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos, OpcionJuegos.Añadir_Juegos};
-            }else{
-               opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos};
-            }
-            
-            int seleccionJuegos = JOptionPane.showOptionDialog(
-                    null,
-                    "¿Qué acción desea realizar con los juegos?",
-                    "Opciones de Juegos",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    opcionesJuegos,
-                    opcionesJuegos[0]);
-
-            if (seleccionJuegos >= 0 && seleccionJuegos < opcionesJuegos.length) {
-                OpcionJuegos opcionSeleccionadaJuegos = opcionesJuegos[seleccionJuegos];
-                switch (opcionSeleccionadaJuegos) {
-                    case Ver_mis_Juegos:
-                        SwingUtilities.invokeLater(() -> {
-                            MiSteam frame = new MiSteam(mas);
-                            frame.setVisible(true);
-                            this.dispose();
-                        });
-                        break;
-                    case Añadir_Juegos:
-                        if (mas.Permisos) {
-                            SwingUtilities.invokeLater(() -> {
-                                NewJuego frame = new NewJuego(mas);
-                                frame.setVisible(true);
-                                this.dispose();
-                            });
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
-                        }
-                        break;
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para juegos.");
-            }
-        });
-
+        // Listeners de botones
+        botonMusica.addActionListener(e -> mostrarOpcionesMusica());
+        botonJuego.addActionListener(e -> mostrarOpcionesJuegos());
         botonChat.addActionListener(e -> {
             SwingUtilities.invokeLater(() -> {
                 ChatCliente chat = new ChatCliente(mas, mas.UserLog, "localhost", 12345);
@@ -193,6 +95,133 @@ public class MiPerfil extends JFrame {
                     this.dispose();
                 });
             }
+        });
+    }
+
+    private JButton crearBotonConIcono(String texto, ImageIcon icono, String tooltip) {
+        JButton boton = new JButton();
+        boton.setLayout(new BorderLayout());
+        boton.setPreferredSize(new Dimension(150, 150));
+        boton.setToolTipText(tooltip);
+
+        // Redimensionar el ícono
+        Image image = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(image);
+
+        // Ícono redimensionado
+        JLabel iconLabel = new JLabel(scaledIcon, SwingConstants.CENTER);
+        boton.add(iconLabel, BorderLayout.CENTER);
+
+        // Texto
+        JLabel textLabel = new JLabel(texto, SwingConstants.CENTER);
+        textLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        boton.add(textLabel, BorderLayout.SOUTH);
+
+        return boton;
+    }
+
+    private void mostrarOpcionesMusica() {
+        OpcionMusica[] opcionesMusica;
+        if (mas.Permisos) {
+            opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Agregar_Biblioteca, OpcionMusica.Mi_Musica};
+        } else {
+            opcionesMusica = new OpcionMusica[]{OpcionMusica.Reproductor, OpcionMusica.Mi_Musica};
+        }
+
+        int seleccionMusica = JOptionPane.showOptionDialog(
+                null,
+                "¿Qué acción desea realizar con la música?",
+                "Opciones de Música",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcionesMusica,
+                opcionesMusica[0]);
+
+        if (seleccionMusica >= 0 && seleccionMusica < opcionesMusica.length) {
+            OpcionMusica opcionSeleccionadaMusica = opcionesMusica[seleccionMusica];
+            switch (opcionSeleccionadaMusica) {
+                case Reproductor:
+                    SwingUtilities.invokeLater(() -> {
+                        MusicPlayer frame = new MusicPlayer(mas);
+                        frame.setVisible(true);
+                        this.dispose();
+                    });
+                    break;
+                case Agregar_Biblioteca:
+                    if (mas.Permisos) {
+                        SwingUtilities.invokeLater(() -> {
+                            NewMusic frame = new NewMusic(mas);
+                            frame.setVisible(true);
+                            this.dispose();
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
+                    }
+                    break;
+                case Mi_Musica:
+                    SwingUtilities.invokeLater(() -> {
+                        AgregarMiMusica frame = new AgregarMiMusica(mas);
+                        frame.setVisible(true);
+                        this.dispose();
+                    });
+                    break;
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para música.");
+        }
+    }
+
+    private void mostrarOpcionesJuegos() {
+        OpcionJuegos[] opcionesJuegos;
+        if (mas.Permisos) {
+            opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos, OpcionJuegos.Añadir_Juegos};
+        } else {
+            opcionesJuegos = new OpcionJuegos[]{OpcionJuegos.Ver_mis_Juegos};
+        }
+
+        int seleccionJuegos = JOptionPane.showOptionDialog(
+                null,
+                "¿Qué acción desea realizar con los juegos?",
+                "Opciones de Juegos",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opcionesJuegos,
+                opcionesJuegos[0]);
+
+        if (seleccionJuegos >= 0 && seleccionJuegos < opcionesJuegos.length) {
+            OpcionJuegos opcionSeleccionadaJuegos = opcionesJuegos[seleccionJuegos];
+            switch (opcionSeleccionadaJuegos) {
+                case Ver_mis_Juegos:
+                    SwingUtilities.invokeLater(() -> {
+                        MiSteam frame = new MiSteam(mas);
+                        frame.setVisible(true);
+                        this.dispose();
+                    });
+                    break;
+                case Añadir_Juegos:
+                    if (mas.Permisos) {
+                        SwingUtilities.invokeLater(() -> {
+                            NewJuego frame = new NewJuego(mas);
+                            frame.setVisible(true);
+                            this.dispose();
+                        });
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No tienes Permisos de Administrador");
+                    }
+                    break;
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para juegos.");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Administrador mas = new Administrador();
+            MiPerfil frame = new MiPerfil(mas);
+            frame.setVisible(true);
         });
     }
 }

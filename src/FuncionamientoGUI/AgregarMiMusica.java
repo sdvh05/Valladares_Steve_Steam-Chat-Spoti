@@ -13,11 +13,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class AgregarMiMusica extends JFrame {
-
-    private JList<String> libraryList;
-    private JList<String> addedList;
-    private DefaultListModel<String> libraryListModel;
-    private DefaultListModel<String> addedListModel;
+    private JList<FileItem> libraryList;
+    private JList<FileItem> addedList;
+    private DefaultListModel<FileItem> libraryListModel;
+    private DefaultListModel<FileItem> addedListModel;
     private String sourceFolderPath;
     private String destinationFolderPath;
     private Administrador mas;
@@ -40,6 +39,7 @@ public class AgregarMiMusica extends JFrame {
 
         libraryListModel = new DefaultListModel<>();
         libraryList = new JList<>(libraryListModel);
+        libraryList.setCellRenderer(new FileItemRenderer());
         JScrollPane libraryScrollPane = new JScrollPane(libraryList);
         leftPanel.add(libraryScrollPane, BorderLayout.CENTER);
 
@@ -57,6 +57,7 @@ public class AgregarMiMusica extends JFrame {
 
         addedListModel = new DefaultListModel<>();
         addedList = new JList<>(addedListModel);
+        addedList.setCellRenderer(new FileItemRenderer());
         JScrollPane addedScrollPane = new JScrollPane(addedList);
         rightPanel.add(addedScrollPane, BorderLayout.CENTER);
 
@@ -76,10 +77,9 @@ public class AgregarMiMusica extends JFrame {
         loadLibraryFiles();
         loadAddedFiles();
 
-        //Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL (Agregar DO_NOTHING_ON_CLOSE))
+        // Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                //Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
                     MiPerfil miPerfil = new MiPerfil(mas);
                     miPerfil.setVisible(true);
@@ -88,58 +88,68 @@ public class AgregarMiMusica extends JFrame {
             }
         });
     }
-    
-    
 
     // Cargar archivos desde la carpeta de origen (Biblioteca)
-private void loadLibraryFiles() {
-    File sourceFolder = new File(sourceFolderPath);
-    if (!sourceFolder.exists() || !sourceFolder.isDirectory()) {
-        JOptionPane.showMessageDialog(null, "La ruta de la biblioteca no es válida.");
-        return;
-    }
-    File[] files = sourceFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".mp3"));
-    if (files != null) {
-        for (File file : files) {
-            libraryListModel.addElement(file.getName());
+    private void loadLibraryFiles() {
+        File sourceFolder = new File(sourceFolderPath);
+        if (!sourceFolder.exists() || !sourceFolder.isDirectory()) {
+            JOptionPane.showMessageDialog(null, "La ruta de la biblioteca no es válida.");
+            return;
+        }
+        File[] files = sourceFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".mp3"));
+        if (files != null) {
+            for (File file : files) {
+                libraryListModel.addElement(readFileItem(file));
+            }
         }
     }
-}
-
 
     // Cargar archivos desde la carpeta de destino (Archivos Añadidos)
     private void loadAddedFiles() {
-    if (destinationFolderPath == null) {
-        JOptionPane.showMessageDialog(null, "La ruta de destino no está definida.");
-        return;
-    }
-
-    File destinationFolder = new File(destinationFolderPath);
-    if (destinationFolder.exists() && destinationFolder.isDirectory()) {
-        File[] files = destinationFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".mp3"));
-        if (files != null) {
-            for (File file : files) {
-                addedListModel.addElement(file.getName());
-            }
+        if (destinationFolderPath == null) {
+            JOptionPane.showMessageDialog(null, "La ruta de destino no está definida.");
+            return;
         }
-    } else {
-        JOptionPane.showMessageDialog(null, "La carpeta de destino no existe o no es un directorio.");
-    }
-}
 
+        File destinationFolder = new File(destinationFolderPath);
+        if (destinationFolder.exists() && destinationFolder.isDirectory()) {
+            File[] files = destinationFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".mp3"));
+            if (files != null) {
+                for (File file : files) {
+                    addedListModel.addElement(readFileItem(file));
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "La carpeta de destino no existe o no es un directorio.");
+        }
+    }
+
+    private FileItem readFileItem(File file) {
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            String titulo = raf.readUTF();
+            String artista = raf.readUTF();
+            String album = raf.readUTF();
+            int duracion = raf.readInt();
+            String rutaMusica = raf.readUTF();
+            String rutaImagen = raf.readUTF();
+
+            return new FileItem(file, titulo, artista, album, rutaImagen);
+        } catch (IOException e) {
+            return new FileItem(file, "Error", "Desconocido", "Desconocido", null);
+        }
+    }
 
     // Listener para el botón "Añadir"
     private class AddButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String selectedFile = libraryList.getSelectedValue();
-            if (selectedFile != null) {
-                Path sourcePath = Paths.get(sourceFolderPath, selectedFile);
-                Path destinationPath = Paths.get(destinationFolderPath, selectedFile);
+            FileItem selectedItem = libraryList.getSelectedValue();
+            if (selectedItem != null) {
+                Path sourcePath = selectedItem.getFile().toPath();
+                Path destinationPath = Paths.get(destinationFolderPath, selectedItem.getFile().getName());
 
                 try {
-                    // Copiar el archivo de la biblioteca a la carpeta de destino
                     Files.copy(sourcePath, destinationPath);
-                    addedListModel.addElement(selectedFile);
+                    addedListModel.addElement(selectedItem);
                     JOptionPane.showMessageDialog(null, "Archivo añadido correctamente.");
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(null, "Error al añadir el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -150,16 +160,15 @@ private void loadLibraryFiles() {
         }
     }
 
-
     private class RemoveButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            String selectedFile = addedList.getSelectedValue();
-            if (selectedFile != null) {
-                Path destinationPath = Paths.get(destinationFolderPath, selectedFile);
+            FileItem selectedItem = addedList.getSelectedValue();
+            if (selectedItem != null) {
+                Path destinationPath = selectedItem.getFile().toPath();
 
                 try {
                     Files.delete(destinationPath);
-                    addedListModel.removeElement(selectedFile);
+                    addedListModel.removeElement(selectedItem);
                     JOptionPane.showMessageDialog(null, "Archivo eliminado correctamente.");
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(null, "Error al eliminar el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -170,5 +179,87 @@ private void loadLibraryFiles() {
         }
     }
 
+    // Clase FileItem para representar los datos del archivo
+    private static class FileItem {
+        private final File file;
+        private final String titulo;
+        private final String artista;
+        private final String album;
+        private final String rutaImagen;
 
+        public FileItem(File file, String titulo, String artista, String album, String rutaImagen) {
+            this.file = file;
+            this.titulo = titulo;
+            this.artista = artista;
+            this.album = album;
+            this.rutaImagen = rutaImagen;
+        }
+
+        public File getFile() {
+            return file;
+        }
+
+        public String getRutaImagen() {
+            return rutaImagen;
+        }
+
+        @Override
+        public String toString() {
+            return titulo; // Solo muestra el título en la lista
+        }
+    }
+
+    // Renderizador para mostrar imagen y detalles
+    private static class FileItemRenderer extends JPanel implements ListCellRenderer<FileItem> {
+        private final JLabel iconLabel;
+        private final JLabel titleLabel;
+        private final JLabel artistLabel;
+        private final JLabel albumLabel;
+
+        public FileItemRenderer() {
+            setLayout(new BorderLayout(5, 5));
+            setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
+
+            iconLabel = new JLabel();
+            iconLabel.setPreferredSize(new Dimension(50, 50));
+            add(iconLabel, BorderLayout.WEST);
+
+            JPanel textPanel = new JPanel();
+            textPanel.setLayout(new GridLayout(3, 1));
+
+            // Configuración del título
+            titleLabel = new JLabel();
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 16)); 
+
+            // Configuración del artista
+            artistLabel = new JLabel();
+            artistLabel.setFont(new Font("Arial", Font.PLAIN, 12)); 
+
+            // Configuración del álbum
+            albumLabel = new JLabel();
+            albumLabel.setFont(new Font("Arial", Font.ITALIC, 12)); 
+
+            textPanel.add(titleLabel);
+            textPanel.add(artistLabel);
+            textPanel.add(albumLabel);
+            add(textPanel, BorderLayout.CENTER);
 }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends FileItem> list, FileItem value, int index, boolean isSelected, boolean cellHasFocus) {
+            if (value.getRutaImagen() != null) {
+                iconLabel.setIcon(new ImageIcon(new ImageIcon(value.getRutaImagen()).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
+            } else {
+                iconLabel.setIcon(null);
+            }
+            titleLabel.setText(value.titulo);
+            artistLabel.setText(value.artista);
+            albumLabel.setText(value.album);
+
+            setBackground(isSelected ? Color.LIGHT_GRAY : Color.WHITE);
+            setForeground(Color.BLACK);
+            return this;
+        }
+    }
+}
+

@@ -1,4 +1,5 @@
 package FuncionamientoGUI.TESTchat.try3;
+
 import java.io.*;
 import java.net.*;
 
@@ -7,34 +8,32 @@ public class ClienteChat {
     private PrintWriter salida;
     private BufferedReader entrada;
 
-    public ClienteChat(String servidor, int puerto) throws IOException {
-        socket = new Socket(servidor, puerto);
+    public ClienteChat(String host, int puerto) throws IOException {
+        socket = new Socket(host, puerto);
         salida = new PrintWriter(socket.getOutputStream(), true);
         entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public void enviarMensaje(String mensaje) {
-        salida.println(mensaje);
-    }
-
-    public void escucharMensajes(ListenerMensaje listener) {
+    public void escucharMensajes(MensajeRecibidoListener listener) {
         new Thread(() -> {
-            String mensaje;
             try {
+                String mensaje;
                 while ((mensaje = entrada.readLine()) != null) {
-                    listener.mensajeRecibido(mensaje);
+                    listener.onMensajeRecibido(mensaje);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Error al leer mensajes: " + e.getMessage());
             }
         }).start();
     }
 
-    public void cerrar() throws IOException {
-        socket.close();
+    public void enviarMensaje(String mensaje) {
+        if (mensaje != null && !mensaje.isEmpty()) {
+            salida.println(mensaje);
+        }
     }
 
-    public interface ListenerMensaje {
-        void mensajeRecibido(String mensaje);
+    public interface MensajeRecibidoListener {
+        void onMensajeRecibido(String mensaje);
     }
 }

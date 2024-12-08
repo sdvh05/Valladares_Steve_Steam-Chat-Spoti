@@ -15,9 +15,10 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 
+
 public class ChatEnVivooo extends JFrame {
-     private Administrador mas;
-     private ClienteChat cliente;
+    private Administrador mas;
+    private ClienteChat cliente;
 
     private JTextArea chatArea;
     private JTextField messageField;
@@ -25,14 +26,13 @@ public class ChatEnVivooo extends JFrame {
     private JLabel titleLabel;
     private JList<String> userList;
 
-    public ChatEnVivooo(Administrador mas) {
-        this.mas=mas;
+    public ChatEnVivooo(Administrador mas) throws IOException {
+        this.mas = mas;
         setTitle("Chat en Vivo");
-        setSize(700, 600); // Ajustar tamaño para acomodar el panel lateral
+        setSize(700, 600);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setLocationRelativeTo(null); // Centrar la ventana
+        setLocationRelativeTo(null); 
 
-        // Panel del título
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BorderLayout());
         titlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -43,7 +43,6 @@ public class ChatEnVivooo extends JFrame {
 
         add(titlePanel, BorderLayout.NORTH);
 
-        // TextArea para el chat
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -54,7 +53,6 @@ public class ChatEnVivooo extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel para enviar mensajes
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BorderLayout(10, 10));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -69,12 +67,10 @@ public class ChatEnVivooo extends JFrame {
 
         add(inputPanel, BorderLayout.SOUTH);
 
-        // Panel aparte con JListUsuarios
         JPanel sidePanel = new JPanel();
         sidePanel.setLayout(new BorderLayout());
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        //Jlist en si
         DefaultListModel<String> listModel = new DefaultListModel<>();
         listModel.addElement("Chat General");
 
@@ -83,7 +79,6 @@ public class ChatEnVivooo extends JFrame {
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         userList.setBorder(BorderFactory.createTitledBorder("Usuarios"));
 
-        //Modificar la UserList
         userList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 messageField.setText("");
@@ -99,11 +94,9 @@ public class ChatEnVivooo extends JFrame {
         sidePanel.add(new JScrollPane(userList), BorderLayout.CENTER);
         add(sidePanel, BorderLayout.EAST);
 
-        // Manejo de cierre de ventana
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // Abrir Mi Perfil
                 SwingUtilities.invokeLater(() -> {
                     MiPerfil miPerfil = new MiPerfil(mas);
                     miPerfil.setVisible(true);
@@ -112,28 +105,26 @@ public class ChatEnVivooo extends JFrame {
             }
         });
 
-            try {
-        cliente = new ClienteChat("127.0.0.1", 12345); // Conexión al servidor local
-        cliente.escucharMensajes(mensaje -> SwingUtilities.invokeLater(() -> {
-            chatArea.append(mensaje + "\n");
-        }));
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor.", "Error", JOptionPane.ERROR_MESSAGE);
-        System.exit(1);
-    }
+        try {
+            cliente = new ClienteChat("localhost", 12345);
+            cliente.escucharMensajes(mensaje -> SwingUtilities.invokeLater(() -> {
+                chatArea.append(mensaje + "\n");
+            }));
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo conectar al servidor.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
 
-    sendButton.addActionListener(e -> enviarMensaje());
-    messageField.addActionListener(e -> enviarMensaje());
+        sendButton.addActionListener(e -> enviarMensaje());
+        messageField.addActionListener(e -> enviarMensaje());
     }
 
     private void enviarMensaje() {
         String mensaje = messageField.getText().trim();
         if (!mensaje.isEmpty()) {
-            chatArea.append("Tú: " + mensaje + "\n");
+            chatArea.append(mas.UserLog + ": " + mensaje + "\n");
+            cliente.enviarMensaje(mensaje);
             messageField.setText("");
         }
     }
-
-
-
 }
