@@ -101,57 +101,8 @@ public class Usuario extends Administrador {
 
 
     
-    
-    //Funciones Juego
-    public String getGames() throws IOException{ //PrintList
-       games.seek(0);
-       
-       while(games.getFilePointer()<games.length()){
-            String name= games.readUTF();
-            String genero=games.readUTF();
-            String desarrollador=games.readUTF();
-            String releasedate=games.readUTF();
-            String ruta=games.readUTF(); 
-         
 
-            //String builder que me genere Todos Mis Juegos y me devuelva todo:
-            System.out.println("---------------------------------------------------------------------------------------");
-            System.out.println(name+" | "+genero+" | "+desarrollador+" | "+releasedate+" | ");
-            System.out.println("----------------------------------------------------------------------------------------");
-       }
-       return "StringBuilder"; //ocupo q me lea la carpeta y retorne todos los archivos
-    }
-    
-    public void AddGame(String name, String genero, String desarrollador, String releaseDate, String rutagame) throws IOException {
-
-    }
-
-
-    
-    
-    
-    //Funciones Music
-    public String getMusic()throws IOException{
-        musics.seek(0);
-        
-        while(musics.getFilePointer()<musics.length()){
-            String titulo=musics.readUTF();
-            String artista=musics.readUTF();
-            String album= musics.readUTF();
-            double duracion=musics.readDouble();
-            musics.readUTF();
-            
-            
-              //String builder que me genere Todos Mis Juegos y me devuelva todo:
-            System.out.println("--------------------------------------------------------");
-            System.out.println(titulo+" | "+artista+" | "+album+" | "+duracion+" | "); 
-            System.out.println("--------------------------------------------------------");
-        }
-        
-      return "StringBuilder";
-    }
-
-    public void AddMusic(String Biblioteca, String namesong) throws IOException {
+    public void AddMeFile(String Biblioteca, String namefile) throws IOException {
         Path sourcePath = Paths.get(Biblioteca);
         Path destinationPath = Paths.get(UserMusic());
         

@@ -16,9 +16,9 @@ import java.util.logging.Logger;
  *
  * @author Hp
  */
-public class Musica  {
+public final class Musica implements GM {
     
-    private RandomAccessFile Mus;
+    private RandomAccessFile newGM;
     private String titulo;
     private String artista;
     private String album;
@@ -34,27 +34,28 @@ public class Musica  {
         this.rutaMusica = rutaMusica;
         this.rutaImagen = rutaImagen;
         
-        try {
-            AddMusic(titulo ,artista , album, duracion, rutaMusica, rutaImagen);
-        } catch (IOException ex) {
-            Logger.getLogger(Musica.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        AddFiles();
          
     }
 
-
-    
-    
-    
     public RandomAccessFile AddMusic(String titulo, String artista, String album, int duracion, String rutaMusica,String rutaImagen) throws IOException {
-        Mus = new RandomAccessFile(titulo + ".mp3", "rw");
-        Mus.writeUTF(titulo);
-        Mus.writeUTF(artista);
-        Mus.writeUTF(album);
-        Mus.writeInt(duracion);
-        Mus.writeUTF(rutaMusica);
-        Mus.writeUTF(rutaImagen);
-        return Mus;
+        newGM = new RandomAccessFile(titulo + ".mp3", "rw");
+        newGM.writeUTF(titulo);
+        newGM.writeUTF(artista);
+        newGM.writeUTF(album);
+        newGM.writeInt(duracion);
+        newGM.writeUTF(rutaMusica);
+        newGM.writeUTF(rutaImagen);
+        return newGM;
+    }
+
+
+    public void AddFiles() {
+        try {
+            AddMusic(titulo, artista, album, duracion, rutaMusica, rutaImagen);
+        } catch (IOException ex) {
+            Logger.getLogger(Musica.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     

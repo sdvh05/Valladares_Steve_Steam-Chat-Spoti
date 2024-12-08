@@ -12,14 +12,12 @@ import java.io.RandomAccessFile;
  *
  * @author Hp
  */
-public abstract class GM {
+public interface GM {
+    RandomAccessFile NewGM=null;
 
-    public GM() {
-        
-    }
-    public abstract  String PrintList(RandomAccessFile raf)throws IOException;
+    public void AddFiles();
     
-    //public abstract String NewRaf(String name)throws IOException;
+   
     
 }
     

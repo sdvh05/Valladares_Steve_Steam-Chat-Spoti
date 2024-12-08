@@ -13,14 +13,16 @@ import java.io.RandomAccessFile;
 import javax.swing.JOptionPane;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Hp
  */
-public class Juego extends GM{
+public final class Juego implements GM{
     
-    private RandomAccessFile Game;
+    private RandomAccessFile newGM;
     private String name;
     private String genero;
     private String desarrollador;
@@ -35,32 +37,30 @@ public class Juego extends GM{
         this.releaseDate = releaseDate;
         this.rutaGame = rutaGame;
         this.rutaImagen = rutaImagen;
+        
+        AddFiles();
     }
-
-
+    
+    public RandomAccessFile AddGame(String name, String genero, String desarrollador, String releaseDate, String rutagame, String rutaImagen)throws IOException{
+        newGM.writeUTF(name);
+        newGM.writeUTF(genero);
+        newGM.writeUTF(desarrollador);
+        newGM.writeUTF(releaseDate);
+        newGM.writeUTF(rutagame);
+        newGM.writeUTF(rutaImagen);
+        return newGM;  
+    }
 
     @Override
-    public String PrintList(RandomAccessFile games) throws IOException {
-        games.seek(0);
-
-        while (games.getFilePointer() < games.length()) {
-            String name = games.readUTF();
-            String genero = games.readUTF();
-            String desarrollador = games.readUTF();
-            String releasedate = games.readUTF();
-            String ruta = games.readUTF();
-            String Imagen= games.readUTF();
-
-            //String builder que me genere Todos Mis Juegos y me devuelva todo:
-            System.out.println("---------------------------------------------------------------------------------------");
-            System.out.println(name + " | " + genero + " | " + desarrollador + " | " + releasedate + " | ");
-            System.out.println("----------------------------------------------------------------------------------------");
+    public void AddFiles() {
+        try {
+            AddGame(name,genero,desarrollador,releaseDate,rutaGame,rutaImagen);
+        } catch (IOException ex) {
+            Logger.getLogger(Juego.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "StringBuilder";
     }
-      
-    
-    
+
+              
     
 
 }

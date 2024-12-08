@@ -53,7 +53,7 @@ public class AgregarMiMusica extends JFrame {
         // Panel Derecho: Archivos Añadidos
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
-        rightPanel.setBorder(BorderFactory.createTitledBorder("Archivos Añadidos"));
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Mi Musica"));
 
         addedListModel = new DefaultListModel<>();
         addedList = new JList<>(addedListModel);
