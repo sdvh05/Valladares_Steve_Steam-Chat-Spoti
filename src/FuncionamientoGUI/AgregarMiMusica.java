@@ -50,7 +50,7 @@ public class AgregarMiMusica extends JFrame {
         addButtonPanel.add(addButton);
         leftPanel.add(addButtonPanel, BorderLayout.SOUTH);
 
-        // Panel Derecho: Archivos Añadidos
+        // Panel Derecho: Mi Musica
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         rightPanel.setBorder(BorderFactory.createTitledBorder("Mi Musica"));
@@ -68,7 +68,7 @@ public class AgregarMiMusica extends JFrame {
         removeButtonPanel.add(removeButton);
         rightPanel.add(removeButtonPanel, BorderLayout.SOUTH);
 
-        // Agregar paneles a la ventana principal
+        // Agregar los paneles
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
         splitPane.setDividerLocation(400);
         add(splitPane, BorderLayout.CENTER);
@@ -77,7 +77,7 @@ public class AgregarMiMusica extends JFrame {
         loadLibraryFiles();
         loadAddedFiles();
 
-        // Hacer que el proyecto no termine con la X, sino que vuelva a mi PERFIL
+        //Hacer que el proyecto no termine con la X, sino que vuelva a miPerfil
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 SwingUtilities.invokeLater(() -> {
@@ -89,7 +89,7 @@ public class AgregarMiMusica extends JFrame {
         });
     }
 
-    // Cargar archivos desde la carpeta de origen (Biblioteca)
+    // Cargar la Biblioteca Musical
     private void loadLibraryFiles() {
         File sourceFolder = new File(sourceFolderPath);
         if (!sourceFolder.exists() || !sourceFolder.isDirectory()) {
@@ -104,7 +104,7 @@ public class AgregarMiMusica extends JFrame {
         }
     }
 
-    // Cargar archivos desde la carpeta de destino (Archivos Añadidos)
+    // Cargar mi Musica
     private void loadAddedFiles() {
         if (destinationFolderPath == null) {
             JOptionPane.showMessageDialog(null, "La ruta de destino no está definida.");
@@ -139,7 +139,7 @@ public class AgregarMiMusica extends JFrame {
         }
     }
 
-    // Listener para el botón "Añadir"
+    // Listeners
     private class AddButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             FileItem selectedItem = libraryList.getSelectedValue();
@@ -205,7 +205,7 @@ public class AgregarMiMusica extends JFrame {
 
         @Override
         public String toString() {
-            return titulo; // Solo muestra el título en la lista
+            return titulo; 
         }
     }
 

@@ -18,6 +18,10 @@ enum OpcionJuegos {
     Ver_mis_Juegos, Añadir_Juegos;
 }
 
+enum OpcionChat{
+    Ver_Logs, ChatEnVIVO;
+}
+
 public class MiPerfil extends JFrame {
     private Administrador mas;
 
@@ -25,7 +29,7 @@ public class MiPerfil extends JFrame {
         this.mas = mas;
         setTitle("Perfil de "+mas.UserLog);
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
@@ -78,13 +82,7 @@ public class MiPerfil extends JFrame {
         // Listeners de botones
         botonMusica.addActionListener(e -> mostrarOpcionesMusica());
         botonJuego.addActionListener(e -> mostrarOpcionesJuegos());
-        botonChat.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                ChatCliente chat = new ChatCliente(mas, mas.UserLog, "localhost", 12345);
-                chat.setVisible(true);
-                this.dispose();
-            });
-        });
+        botonChat.addActionListener(e -> mostrarOpcionesChat());
 
         cerrarSesion.addActionListener(e -> {
             int respuesta = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cerrar sesión?", "Confirmar Cierre de Sesión", JOptionPane.YES_NO_OPTION);
@@ -216,12 +214,57 @@ public class MiPerfil extends JFrame {
             JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para juegos.");
         }
     }
+    
+private void mostrarOpcionesChat() {
+    
+    SwingUtilities.invokeLater(() -> {
+        ChatCliente chat = new ChatCliente(mas, mas.UserLog, "localhost", 12345);
+        chat.setVisible(true);
+        this.dispose();
+    });
+    
+//    OpcionChat[] opcionesChat;
+//
+//    if (mas.Permisos) {
+//        opcionesChat = OpcionChat.values(); 
+//    } else {
+//        opcionesChat = new OpcionChat[]{OpcionChat.ChatEnVIVO}; 
+//    }
+//
+//    int seleccionChat = JOptionPane.showOptionDialog(
+//            null,
+//            "¿Qué acción desea realizar con el chat?",
+//            "Opciones de Chat",
+//            JOptionPane.DEFAULT_OPTION,
+//            JOptionPane.QUESTION_MESSAGE,
+//            null,
+//            opcionesChat,
+//            opcionesChat[0]);
+//
+//    if (seleccionChat >= 0 && seleccionChat < opcionesChat.length) {
+//        OpcionChat opcionSeleccionadaChat = opcionesChat[seleccionChat];
+//        switch (opcionSeleccionadaChat) {
+//            case Ver_Logs:
+//                SwingUtilities.invokeLater(() -> {
+//                    VerLogsChat frame = new VerLogsChat(mas); 
+//                    frame.setVisible(true);
+//                    this.dispose();
+//                });
+//                break;
+//            case ChatEnVIVO:
+//                SwingUtilities.invokeLater(() -> {
+//                    ChatCliente chat = new ChatCliente(mas, mas.UserLog, "localhost", 12345);
+//                    chat.setVisible(true);
+//                    this.dispose();
+//                });
+//                break;
+//        }
+//    } else {
+//        JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción para el chat.");
+//    }
+}
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Administrador mas = new Administrador();
-            MiPerfil frame = new MiPerfil(mas);
-            frame.setVisible(true);
-        });
-    }
+
+
+
 }

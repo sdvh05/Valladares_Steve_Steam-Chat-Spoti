@@ -20,37 +20,36 @@ public class Login extends JFrame {
         this.mas=mas;
         setTitle("Login");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400); // Aumenta el tamaño del frame
+        setSize(500, 400); 
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Panel principal con padding
+        // Panel main
         JPanel mainPanel = new JPanel(new GridLayout(5, 1, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Etiqueta de título
+        // Titulo
         JLabel titleLabel = new JLabel("Log In", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         mainPanel.add(titleLabel);
 
-        // Campo de usuario
+        //UsernameField
         usernameField = new JTextField();
         usernameField.setBorder(BorderFactory.createTitledBorder("Usuario"));
         usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
         mainPanel.add(usernameField);
 
-        // Campo de contraseña
+        //passwordField
         passwordField = new JPasswordField();
         passwordField.setBorder(BorderFactory.createTitledBorder("Contraseña"));
         passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
         mainPanel.add(passwordField);
 
-        // Checkbox para mostrar la contraseña
+        //Show constraseña
         showPasswordCheckBox = new JCheckBox("Mostrar contraseña");
         showPasswordCheckBox.setFont(new Font("Arial", Font.PLAIN, 14));
         mainPanel.add(showPasswordCheckBox);
 
-        // Acción para mostrar u ocultar la contraseña
         showPasswordCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -95,7 +94,6 @@ public class Login extends JFrame {
                         JOptionPane.showMessageDialog(null, "Los datos no Coinciden con la base de Datos", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (IOException ex) {
-                    // Manejo del error si ocurre una IOException
                     JOptionPane.showMessageDialog(null, "Error al intentar iniciar sesión. "
                             + "Por favor, intente nuevamente más tarde.", "Error de I/O", JOptionPane.ERROR_MESSAGE);
                 }
@@ -113,9 +111,27 @@ public class Login extends JFrame {
             }
         });
 
+ // Activar login al presionar Enter
+        usernameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    loginButton.doClick(); // Simula un click en el botón Login
+                }
+            }
+        });
+
+        passwordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    loginButton.doClick(); // Simula un click en el botón Login
+                }
+            }
+        });
+
         setVisible(true);
     }
-
-
+    
 }
 

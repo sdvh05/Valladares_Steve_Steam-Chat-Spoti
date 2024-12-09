@@ -23,22 +23,3 @@ public class Main {
         
     }
 }
-
-  
-   
-//    public Inicio(Master mast) {
-//        initComponents();
-//        this.setTitle("Steve Valladares 22341344");
-//        this.setLocationRelativeTo(null);
-//        mas=mast;
-//    }
-//    
-//    
-//    public Inicio() {
-//        initComponents();
-//        this.setTitle("Steve Valladares 22341344");
-//        this.setLocationRelativeTo(null);
-//        mas=new Master();
-//    }
-
-

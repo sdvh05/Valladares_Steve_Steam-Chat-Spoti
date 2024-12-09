@@ -9,26 +9,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.IOException;
 
 public class SignIn extends JFrame {
 
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JCheckBox adminCheckBox;
+    private JCheckBox showPasswordCheckBox;
     private Administrador mas;
 
     public SignIn(Administrador mas) {
         this.mas = mas;
         setTitle("Crear Cuenta");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(500, 400); // Tamaño ajustado
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setSize(500, 400); 
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel panel = new JPanel(new GridLayout(5, 1, 10, 10)); // GridLayout ajustado
+        JPanel panel = new JPanel(new GridLayout(6, 1, 10, 10)); // GridLayout ajustado
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
@@ -36,17 +41,31 @@ public class SignIn extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(titleLabel);
 
-        // Campo de texto para el usuario
+        // UserField
         usernameField = new JTextField();
         usernameField.setBorder(BorderFactory.createTitledBorder("Usuario"));
         panel.add(usernameField);
 
-        // Campo de texto para la contraseña
+        //PasswordFields
         passwordField = new JPasswordField();
         passwordField.setBorder(BorderFactory.createTitledBorder("Contraseña"));
         panel.add(passwordField);
 
-        // Checkbox para cuenta de administrador
+        //Show Pass
+        showPasswordCheckBox = new JCheckBox("Mostrar contraseña");
+        showPasswordCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckBox.isSelected()) {
+                    passwordField.setEchoChar((char) 0); 
+                } else {
+                    passwordField.setEchoChar('*'); 
+                }
+            }
+        });
+        panel.add(showPasswordCheckBox);
+
+        // Checkbox Admin
         adminCheckBox = new JCheckBox("Cuenta Administrador");
         panel.add(adminCheckBox);
 
@@ -60,8 +79,18 @@ public class SignIn extends JFrame {
         panel.add(buttonPanel);
 
         add(panel);
+        
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    Login LG = new Login (mas);
+                    LG.setVisible(true);
+                });
+                dispose();
+            }
+        });
 
-        // Acción para el botón "Crear Cuenta"
+        // Crear Cuenta
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -69,35 +98,61 @@ public class SignIn extends JFrame {
                 String password = new String(passwordField.getPassword());
                 boolean isAdmin = adminCheckBox.isSelected();
 
-                // Verificar si los campos están vacíos
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor, rellena todas las casillas", "Error", JOptionPane.WARNING_MESSAGE);
                 } else {
                     try {
-                        // Llamada al método CreateUser para crear el nuevo usuario
                         boolean crear = mas.CreateUser(username, password, isAdmin);
 
-                        // Comprobar si la creación fue exitosa
                         if (crear) {
                             SwingUtilities.invokeLater(() -> {
                                 MiPerfil miPerfil = new MiPerfil(mas);
                                 miPerfil.setVisible(true);
                             });
-                            dispose(); // Cerrar la ventana de registro
+                            dispose(); 
                         } else {
-                            // Si el usuario ya existe
                             JOptionPane.showMessageDialog(null, "El username ya está en uso. Por favor, elige otro.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                     } catch (IOException ex) {
-                        // Manejo de excepciones: mostrar un mensaje de error si ocurre un problema de IO
                         JOptionPane.showMessageDialog(null, "Error al crear el usuario. Inténtalo de nuevo.", "Error de I/O", JOptionPane.ERROR_MESSAGE);
                         Logger.getLogger(SignIn.class.getName()).log(Level.SEVERE, "Error al crear el usuario", ex);
                     }
                 }
             }
         });
+        
+        //ENTER da click al boton
+        usernameField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createButton.doClick(); 
+            }
+        });
 
-        // Acción para el botón "Regresar"
+        passwordField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createButton.doClick(); 
+            }
+        });
+
+        adminCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Si el usuario selecciona cualquier opción en el combo, simula clic en el botón "Crear Cuenta"
+                createButton.doClick();
+            }
+        });
+        
+        showPasswordCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Si el usuario selecciona cualquier opción en el combo, simula clic en el botón "Crear Cuenta"
+                createButton.doClick();
+            }
+        });
+
+        //Return
         returnButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -105,8 +160,9 @@ public class SignIn extends JFrame {
                 dispose();
             }
         });
-
+        
+        usernameField.requestFocusInWindow();
         setVisible(true);
     }
-
+    
 }

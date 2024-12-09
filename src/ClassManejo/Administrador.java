@@ -36,7 +36,7 @@ public class Administrador {
     public String UserLog, MusicaUser, GameUser; //Guargar lo que necesito, las carpetas y el User
     public boolean Permisos, open;
     
-    private RandomAccessFile users, newSong, newGame;
+    private RandomAccessFile users, newSong, newGame, chatLogs;
 
     public Administrador() {
 
@@ -49,6 +49,7 @@ public class Administrador {
             CrearBibliotecas();
             //2-Instanciar RAFs dentro de Company
             users = new RandomAccessFile(Path + "/ListUsuarios.p2p", "rw");
+            chatLogs= new RandomAccessFile(Path+"/ChatLogs.p2p","rw");
 
         } catch (IOException e) {
 
@@ -67,6 +68,10 @@ public class Administrador {
 
     protected String UserSteam() {
         return getParentPath() + "/BibliotecaSteam";
+    }
+    
+    public String AllLogs(){
+        return Path+"/ChatLogs.p2p";
     }
     
     private void CrearBibliotecas()throws IOException{
@@ -96,8 +101,8 @@ public class Administrador {
 
     public boolean CreateUser(String username, String pass, boolean admin) throws IOException {
         if (!ExisteUsername(username)) {
-            users.seek(users.length()); //puntero al final
-            users.writeUTF(username); //escribir datos
+            users.seek(users.length()); 
+            users.writeUTF(username); 
             users.writeUTF(pass);
             users.writeBoolean(admin);
             
@@ -183,6 +188,12 @@ public class Administrador {
         newGame.writeUTF(rutaImagen);
         return newGame;  
     }
+    
+    public void WtireChatRAF(String mensaje) throws IOException{
+        chatLogs.seek(chatLogs.length());
+        chatLogs.writeUTF(mensaje);
+    }
+    
 //---------------------------------------------------------------------------------------------------------------------------------------
 
     //Server:
