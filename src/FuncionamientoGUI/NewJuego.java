@@ -153,7 +153,7 @@ public class NewJuego extends JFrame {
         setVisible(true);
     }
 
-    // Método para crear campos con etiquetas en vertical
+    //Labels para elegir archivo
     private JPanel createLabeledField(String labelText, JTextField textField) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -164,7 +164,7 @@ public class NewJuego extends JFrame {
         return panel;
     }
 
-    // Método para seleccionar archivos
+    //JTREE
     private void seleccionarArchivo(JTextField textField) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -181,7 +181,7 @@ public class NewJuego extends JFrame {
         }
     }
 
-    // Método para guardar el juego
+    //NewGame
     private void guardarJuego() {
         String nombre = nombreField.getText();
         String genero = generoField.getText();
@@ -193,14 +193,14 @@ public class NewJuego extends JFrame {
         String rutaInstalacion = rutaInstalacionField.getText();
         String rutaImagen = rutaImagenField.getText();
 
-        // Validaciones básicas
+        //Comprobar que todo este lleno
         if (nombre.isEmpty() || genero.isEmpty() || desarrollador.isEmpty() || dia.isEmpty() || anio.isEmpty()
                 || rutaInstalacion.isEmpty() || rutaImagen.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Mostrar datos ingresados
+        //Salida de pantalla
         JOptionPane.showMessageDialog(this, "Juego Guardado:\n"
                 + "Nombre: " + nombre + "\n"
                 + "Género: " + genero + "\n"

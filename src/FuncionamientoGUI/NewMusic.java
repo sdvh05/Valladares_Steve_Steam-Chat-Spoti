@@ -36,18 +36,18 @@ public class NewMusic extends JFrame {
         setLocationRelativeTo(null); // Centrar ventana
         setLayout(new BorderLayout());
 
-        // Panel izquierdo Datos Nueva Música
+        //Nueva Música
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Ordenar y formato vertical
+        //Orden vertical
         formPanel.add(createLabeledField("Título:", tituloField = new JTextField()));
         formPanel.add(createLabeledField("Artista:", artistaField = new JTextField()));
         formPanel.add(createLabeledField("Álbum:", albumField = new JTextField()));
         formPanel.add(createLabeledField("Duración (segundos):", duracionField = new JTextField()));
 
-        // Ruta de archivo
+        //Ruta del archivo
         JPanel archivoPanel = new JPanel(new BorderLayout());
         archivoPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         rutaArchivoField = new JTextField();
@@ -59,7 +59,7 @@ public class NewMusic extends JFrame {
         archivoPanel.add(seleccionarArchivoBtn, BorderLayout.SOUTH);
         formPanel.add(archivoPanel);
 
-        // Ruta de imagen
+        // Ruta de la imagen
         JPanel imagenPanel = new JPanel(new BorderLayout());
         imagenPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         rutaImagenField = new JTextField();
@@ -73,19 +73,19 @@ public class NewMusic extends JFrame {
 
         add(formPanel, BorderLayout.CENTER);
 
-        // Panel Decoración
+        //Decoracion Disco
         JPanel rightPanel = new JPanel();
         rightPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
-        // Label Decoración
+        //Label Decoración
         discoPreview = new JLabel();
         discoPreview.setHorizontalAlignment(JLabel.CENTER);
         discoPreview.setVerticalAlignment(JLabel.CENTER);
         discoPreview.setPreferredSize(new Dimension(200, 200));
 
         // Cargar Imagen Disco
-        ImageIcon discoImage = new ImageIcon("src/Imagenes/Disco.png");
+        ImageIcon discoImage = new ImageIcon("src/Imagenes/Disco.jpg");
         if (discoImage.getIconWidth() > 0) {
             Image scaledImage = discoImage.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
             discoPreview.setIcon(new ImageIcon(scaledImage));
@@ -94,7 +94,7 @@ public class NewMusic extends JFrame {
         }
         rightPanel.add(discoPreview);
 
-        // Espacio para separarlo del preview
+        //Espacio para separarlo del preview
         rightPanel.add(Box.createVerticalStrut(20));
 
         // Preview de la carátula seleccionada
