@@ -151,9 +151,8 @@ public class MusicPlayer extends JFrame {
             }
         });
 
-        // Acción para alternar entre Play y Pause
         playPauseButton.addActionListener(e -> togglePlayPause());
-        
+
         songList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedSong = songList.getSelectedValue();
@@ -161,9 +160,26 @@ public class MusicPlayer extends JFrame {
                 if (isPlaying) {
                     player.close();
                 }
-                isPlaying=false;
+                isPlaying = false;
                 // Llamar a togglePlayPause() al seleccionar la canción
                 togglePlayPause();
+            }
+        });
+        previousButton.addActionListener(e -> {
+            int currentIndex = songList.getSelectedIndex();
+            if (currentIndex > 0) {
+                songList.setSelectedIndex(currentIndex - 1); // Seleccionar el elemento anterior
+            } else if (currentIndex == 0) {
+                songList.setSelectedIndex(listModel.getSize() - 1); // Ir al último elemento si está en el primero
+            }
+        });
+
+        nextButton.addActionListener(e -> {
+            int currentIndex = songList.getSelectedIndex();
+            if (currentIndex < listModel.getSize() - 1) {
+                songList.setSelectedIndex(currentIndex + 1); // Seleccionar el siguiente elemento
+            } else if (currentIndex == listModel.getSize() - 1) {
+                songList.setSelectedIndex(0); // Ir al primer elemento si está en el último
             }
         });
     }
@@ -189,7 +205,7 @@ public class MusicPlayer extends JFrame {
             File songFile = new File(carpetaMusica, songName);
             musicFile = new RandomAccessFile(songFile, "r");
 
-            // Datos de la Canción
+            // Datos de la Rola
             titlee = musicFile.readUTF();
             artist = musicFile.readUTF();
             String album = musicFile.readUTF();

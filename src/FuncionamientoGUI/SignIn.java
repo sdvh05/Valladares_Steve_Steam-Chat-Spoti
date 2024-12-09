@@ -33,7 +33,7 @@ public class SignIn extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        JPanel panel = new JPanel(new GridLayout(6, 1, 10, 10)); // GridLayout ajustado
+        JPanel panel = new JPanel(new GridLayout(6, 1, 10, 10)); 
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
